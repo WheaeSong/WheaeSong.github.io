@@ -230,6 +230,351 @@
 
 
   
+    <article id="post-0009回文数" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/15/0009%E5%9B%9E%E6%96%87%E6%95%B0/">0009-回文数</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/15/0009%E5%9B%9E%E6%96%87%E6%95%B0/" class="archive-article-date">
+  	<time datetime="2021-03-15T13:52:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><p>给你一个整数 x ，如果 x 是一个回文整数，返回 true ；否则，返回 false 。</p>
+<p>回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。例如，121 是回文，而 123 不是。</p>
+<p> </p>
+<p>示例 1：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">输入：<span class="keyword">x</span> <span class="operator">=</span> <span class="number">121</span></span><br><span class="line">输出：<span class="keyword">true</span></span><br><span class="line">示例 <span class="number">2</span>：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p><code>输入：x = -121</code><br><code>输出：false</code><br><code>解释：从左向右读, 为 -121 。 从右向左读, 为 121- 。因此它不是一个回文数。</code><br><code>示例 3：</code></p>
+<p>输<code>入：x = 10</code><br><code>输出：false</code><br><code>解释：从右向左读, 为 01 。因此它不是一个回文数。</code><br><code>示例 4：</code></p>
+<p><code>输入：x = -101</code><br><code>输出：false</code></p>
+<p>提示：</p>
+<p><code>-231 &lt;= x &lt;= 231 - 1</code></p>
+<p>进阶：你能不将整数转为字符串来解决这个问题吗？</p>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/palindrome-number">https://leetcode-cn.com/problems/palindrome-number</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+<h4 id="解题思路："><a href="#解题思路：" class="headerlink" title="解题思路："></a>解题思路：</h4><p>这题跟和与积差不多的思想，同样有两种方式：</p>
+<p>1、模10得出每一位数字，然后组合判断；</p>
+<p>2、转化字符串，切片判断。</p>
+<p>代码实现：`</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">isPalindrome</span>(<span class="params">self, x: <span class="built_in">int</span></span>) -&gt; bool:</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> x&gt;=<span class="number">0</span>:</span><br><span class="line">            k = <span class="built_in">abs</span>(x)</span><br><span class="line">            t = <span class="built_in">list</span>(<span class="built_in">map</span>(<span class="built_in">int</span>,<span class="built_in">str</span>(k)))</span><br><span class="line">            a = t[::-<span class="number">1</span>]</span><br><span class="line">            <span class="keyword">if</span> a==t:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">else</span> :<span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        <span class="keyword">else</span>:<span class="keyword">return</span> <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+
+<p>运行效果： </p>
+<p><img src="https://img.imgdb.cn/item/604f65b25aedab222cba10d5.jpg" alt="回文数"></p>
+<h4 id="涉及知识复习："><a href="#涉及知识复习：" class="headerlink" title="涉及知识复习："></a>涉及知识复习：</h4><p>字符串切片</p>
+<p>用法：</p>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">字符串对象[heard:<span class="keyword">end</span>:stip]</span><br><span class="line"><span class="symbol">heard:</span>切片开始位置（不包含该位置）；</span><br><span class="line"><span class="keyword">end</span>：切片结束位置(不包含该位置）；</span><br><span class="line">stip：步长，就是下一个字符与上一个字符之间的距离。</span><br></pre></td></tr></table></figure>
+
+<h5 id="eg"><a href="#eg" class="headerlink" title="eg"></a>eg</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a = <span class="string">&#x27;12345&#x27;</span></span><br><span class="line">a[<span class="number">1</span>::]</span><br><span class="line">a[:<span class="number">1</span>:]</span><br><span class="line">a[<span class="number">1</span>:<span class="number">1</span>:]</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img.imgdb.cn/item/604f64de5aedab222cb99f60.jpg" alt="切片"></p>
+<h5 id="考察点：int"><a href="#考察点：int" class="headerlink" title="考察点：int"></a>考察点：int</h5>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">int</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/15/0009%E5%9B%9E%E6%96%87%E6%95%B0/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-1313解压缩编码列表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/15/1313%E8%A7%A3%E5%8E%8B%E7%BC%A9%E7%BC%96%E7%A0%81%E5%88%97%E8%A1%A8/">1313-解压缩编码列表</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/15/1313%E8%A7%A3%E5%8E%8B%E7%BC%A9%E7%BC%96%E7%A0%81%E5%88%97%E8%A1%A8/" class="archive-article-date">
+  	<time datetime="2021-03-15T13:16:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>###题目描述：</p>
+<p>​        给你一个以行程长度编码压缩的整数列表 nums 。</p>
+<p>考虑每对相邻的两个元素 [freq, val] = [nums[2<em>i], nums[2</em>i+1]] （其中 i &gt;= 0 ），每一对都表示解压后子列表中有 freq 个值为 val 的元素，你需要从左到右连接所有子列表以生成解压后的列表。</p>
+<p>请你返回解压后的列表。</p>
+<p> #### 示例 1：</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = <span class="comment">[1,2,3,4]</span></span><br><span class="line">输出：<span class="comment">[2,4,4,4]</span></span><br><span class="line">解释：第一对 <span class="comment">[1,2]</span> 代表着 2 的出现频次为 1，所以生成数组 <span class="comment">[2]</span>。</span><br><span class="line">第二对 <span class="comment">[3,4]</span> 代表着 4 的出现频次为 3，所以生成数组 <span class="comment">[4,4,4]</span>。</span><br><span class="line">最后将它们串联到一起 <span class="comment">[2]</span> + <span class="comment">[4,4,4]</span> = <span class="comment">[2,4,4,4]</span>。</span><br></pre></td></tr></table></figure>
+
+
+
+<p>####示例 2：</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = <span class="comment">[1,1,2,3]</span></span><br><span class="line">输出：<span class="comment">[1,3,3]</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>提示：</p>
+<p>2 &lt;= nums.length &lt;= 100<br>nums.length % 2 == 0<br>1 &lt;= nums[i] &lt;= 100</p>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/decompress-run-length-encoded-list">https://leetcode-cn.com/problems/decompress-run-length-encoded-list</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+<h4 id="解题思路："><a href="#解题思路：" class="headerlink" title="解题思路："></a>解题思路：</h4><p>​    由题可知，每两个相邻的元素分为一组，我首先想到的思路是把列表切片，各隔一个切一次，分为两组，一组以0开始，一组以一开始。</p>
+<p>​    如此就可得到两个列表，一个为freq列表，一个为val列表。这样，我只用一次遍历，每次遍历取出freq[i]和val[i]，用val乘以freq，即把val重复freq次存入一个新的数组，最后得到的就是所要求的答案</p>
+<p>###代码实现： </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">decompressRLElist</span>(<span class="params">self, nums: List[<span class="built_in">int</span>]</span>) -&gt; List[int]:</span></span><br><span class="line">        value = nums[::<span class="number">2</span>]</span><br><span class="line">        num = nums[<span class="number">1</span>::<span class="number">2</span>]</span><br><span class="line">        item = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(value)):</span><br><span class="line">            item += value[i]*[<span class="built_in">str</span>(num[i])]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> [<span class="built_in">int</span>(k) <span class="keyword">for</span> k <span class="keyword">in</span> item]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>####涉及知识点复习： </p>
+<p>for的高级用法，[int[k] for k in item]，需要先定义k，用法如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[ 对i的操作 for i in 列表 ]</span><br></pre></td></tr></table></figure>
+
+<p>相当于：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> 列表:</span><br><span class="line">    [].append(对i的操作)</span><br></pre></td></tr></table></figure>
+
+<h4 id="知识扩展："><a href="#知识扩展：" class="headerlink" title="知识扩展："></a>知识扩展：</h4><p>​    双层 for 循环： </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[对i的操作 <span class="keyword">for</span> 单个元素 <span class="keyword">in</span> 列表 <span class="keyword">for</span> i <span class="keyword">in</span> 单个元素]</span><br></pre></td></tr></table></figure>
+
+<h5 id="类似于"><a href="#类似于" class="headerlink" title="类似于:"></a>类似于:</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">y_list = [<span class="string">&#x27;aaa&#x27;</span>,<span class="string">&#x27;dvv&#x27;</span>]:</span><br><span class="line">	<span class="keyword">for</span> y <span class="keyword">in</span> y_list:</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> y:</span><br><span class="line">            [].append(i)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img.imgdb.cn/item/604f5c6c5aedab222cb4a3d9.jpg" alt="输出结果"></p>
+<p>同样的，还有 if 的简写： </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y = <span class="number">0</span></span><br><span class="line">x = y +<span class="number">3</span> <span class="keyword">if</span> y&gt;<span class="number">1</span> <span class="keyword">else</span> y-<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img.imgdb.cn/item/604f5d115aedab222cb4ff42.jpg" alt="if简写"></p>
+<h4 id="考察点：列表"><a href="#考察点：列表" class="headerlink" title="考察点：列表"></a>考察点：列表</h4>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">列表</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/15/1313%E8%A7%A3%E5%8E%8B%E7%BC%A9%E7%BC%96%E7%A0%81%E5%88%97%E8%A1%A8/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-两数之和" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/10/%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C/">0001 两数之和</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/10/%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C/" class="archive-article-date">
+  	<time datetime="2021-03-10T08:52:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-10</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><p>给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 的那 两个 整数，并返回它们的数组下标。</p>
+<p>你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。</p>
+<p>你可以按任意顺序返回答案。</p>
+<p>示例 1：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输出：[0,1]</span><br><span class="line">解释：因为 nums[0] + nums[1] &#x3D;&#x3D; 9 ，返回 [0, 1] 。&#96;&#96;&#96;</span><br><span class="line">示例 2：</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输出：[1,2]&#96;&#96;&#96;</span><br><span class="line">示例 3：</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">输出：[0,1]&#96;&#96;&#96;</span><br></pre></td></tr></table></figure>
+
+<p>#####提示：</p>
+<figure class="highlight plain"><figcaption><span><</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-109 &lt;&#x3D; nums[i] &lt;&#x3D; 109</span><br><span class="line">-109 &lt;&#x3D; target &lt;&#x3D; 109&#96;&#96;&#96;</span><br><span class="line">只会存在一个有效答案</span><br></pre></td></tr></table></figure>
+
+<h3 id="解题思路一"><a href="#解题思路一" class="headerlink" title="解题思路一"></a>解题思路一</h3><p>求得是列表里面的两数和， 我定义了一个列表从第一个遍历到倒数第一个，然后用target每次遍历都减去遍历得到的值，得到另一个数。然后进行另外一次遍历，从j = i+1开始，如果list[j]的值与target-nums[i]的值相等，就返回i和j</p>
+<p>代码实现如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">twoSum</span>(<span class="params">self, nums: List[<span class="built_in">int</span>], target: <span class="built_in">int</span></span>) -&gt; List[int]:</span></span><br><span class="line">        long = <span class="built_in">len</span>(nums)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(long) :</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(i+<span class="number">1</span>,long):</span><br><span class="line">                <span class="built_in">sum</span> = nums[i] + nums[j]</span><br><span class="line">                <span class="keyword">if</span> <span class="built_in">sum</span> == target :</span><br><span class="line">                    <span class="keyword">return</span>(i, j)</span><br></pre></td></tr></table></figure>
+
+<p>运行效率如下：</p>
+<p><img src="https://img.imgdb.cn/item/604b57755aedab222cceba71.jpg" alt="两数之和"></p>
+<h5 id="考察点：int"><a href="#考察点：int" class="headerlink" title="考察点：int"></a>考察点：int</h5>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">两数之和</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/10/%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-整数积和差" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -424,6 +769,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">int</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">列表</a>
               </li>
             
             <div class="clearfix"></div>
