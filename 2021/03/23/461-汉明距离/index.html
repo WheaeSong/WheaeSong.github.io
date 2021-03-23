@@ -6,22 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>0001 两数之和 | Noir</title>
+  <title>461-汉明距离 | Noir</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="题目描述：给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 的那 两个 整数，并返回它们的数组下标。 你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。 你可以按任意顺序返回答案。 示例 1： 123输出：[0,1]解释：因为 nums[0] + nums[1] &#x3D;&#x3D; 9 ，返回 [0, 1] 。&#96;&amp;#96">
+  <meta name="description" content="题目描述： 两个整数之间的汉明距离指的是这两个数字对应二进制位不同的位置的数目。 给出两个整数 x 和 y，计算它们之间的汉明距离。 注意：0 ≤ x, y &lt; 231. 示例: 输入: x &#x3D; 1, y &#x3D; 4 输出: 2 解释:1   (0 0 0 1)4   (0 1 0 0)       ↑   ↑ 上面的箭头指出了对应二进制位不同的位置。 来源：力扣（LeetCode）链接：htt">
 <meta property="og:type" content="article">
-<meta property="og:title" content="0001 两数之和">
-<meta property="og:url" content="http://example.com/2021/03/10/%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C/index.html">
+<meta property="og:title" content="461-汉明距离">
+<meta property="og:url" content="http://example.com/2021/03/23/461-%E6%B1%89%E6%98%8E%E8%B7%9D%E7%A6%BB/index.html">
 <meta property="og:site_name" content="Noir">
-<meta property="og:description" content="题目描述：给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 的那 两个 整数，并返回它们的数组下标。 你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。 你可以按任意顺序返回答案。 示例 1： 123输出：[0,1]解释：因为 nums[0] + nums[1] &#x3D;&#x3D; 9 ，返回 [0, 1] 。&#96;&amp;#96">
+<meta property="og:description" content="题目描述： 两个整数之间的汉明距离指的是这两个数字对应二进制位不同的位置的数目。 给出两个整数 x 和 y，计算它们之间的汉明距离。 注意：0 ≤ x, y &lt; 231. 示例: 输入: x &#x3D; 1, y &#x3D; 4 输出: 2 解释:1   (0 0 0 1)4   (0 1 0 0)       ↑   ↑ 上面的箭头指出了对应二进制位不同的位置。 来源：力扣（LeetCode）链接：htt">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://img.imgdb.cn/item/604b57755aedab222cceba71.jpg">
-<meta property="article:published_time" content="2021-03-10T08:52:07.000Z">
-<meta property="article:modified_time" content="2021-03-15T14:01:14.919Z">
+<meta property="og:image" content="https://img.imgdb.cn/item/6059ee018322e6675c625f2c.jpg">
+<meta property="article:published_time" content="2021-03-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-23T13:43:02.487Z">
 <meta property="article:author" content="Noir">
-<meta property="article:tag" content="两数之和">
+<meta property="article:tag" content="int">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img.imgdb.cn/item/604b57755aedab222cceba71.jpg">
+<meta name="twitter:image" content="https://img.imgdb.cn/item/6059ee018322e6675c625f2c.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Noir" type="application/atom+xml">
   
@@ -161,46 +161,87 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-两数之和" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-461-汉明距离" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      0001 两数之和
+      461-汉明距离
     </h1>
   
 
         
-        <a href="/2021/03/10/%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C/" class="archive-article-date">
-  	<time datetime="2021-03-10T08:52:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-10</time>
+        <a href="/2021/03/23/461-%E6%B1%89%E6%98%8E%E8%B7%9D%E7%A6%BB/" class="archive-article-date">
+  	<time datetime="2021-03-22T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-23</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><p>给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 的那 两个 整数，并返回它们的数组下标。</p>
-<p>你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。</p>
-<p>你可以按任意顺序返回答案。</p>
-<p>示例 1：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输出：[0,1]</span><br><span class="line">解释：因为 nums[0] + nums[1] &#x3D;&#x3D; 9 ，返回 [0, 1] 。&#96;&#96;&#96;</span><br><span class="line">示例 2：</span><br></pre></td></tr></table></figure>
+        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
+<p>两个整数之间的汉明距离指的是这两个数字对应二进制位不同的位置的数目。</p>
+<p>给出两个整数 x 和 y，计算它们之间的汉明距离。</p>
+<p>注意：<br>0 ≤ x, y &lt; 231.</p>
+<p>示例:</p>
+<p>输入: x = 1, y = 4</p>
+<p>输出: 2</p>
+<p>解释:<br>1   (0 0 0 1)<br>4   (0 1 0 0)<br>       ↑   ↑</p>
+<p>上面的箭头指出了对应二进制位不同的位置。</p>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/hamming-distance">https://leetcode-cn.com/problems/hamming-distance</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+</blockquote>
+<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>​    要求 二进制不同位置的数目，那很简单，1 异或 0等于 1，那二进制中一样成立，x 和 y 异或得到一个值，这个值的二进制表示中，如果是1 说明原来的两个数二进制表示的这一位必定不相同，答案就出来了</p>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">hammingDistance</span>(<span class="params">self, x: <span class="built_in">int</span>, y: <span class="built_in">int</span></span>) -&gt; int:</span></span><br><span class="line">        <span class="keyword">return</span> (<span class="built_in">bin</span>(x^y).count(<span class="string">&#x27;1&#x27;</span>))</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输出：[1,2]&#96;&#96;&#96;</span><br><span class="line">示例 3：</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">输出：[0,1]&#96;&#96;&#96;</span><br></pre></td></tr></table></figure>
 
-<p>#####提示：</p>
-<figure class="highlight plain"><figcaption><span><</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-109 &lt;&#x3D; nums[i] &lt;&#x3D; 109</span><br><span class="line">-109 &lt;&#x3D; target &lt;&#x3D; 109&#96;&#96;&#96;</span><br><span class="line">只会存在一个有效答案</span><br></pre></td></tr></table></figure>
+<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>描述</th>
+<th>实例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&amp;</td>
+<td>按位与运算符：参与运算的两个值,如果两个相应位都为1,则该位的结果为1,否则为0</td>
+<td>(a &amp; b) 输出结果 12 ，二进制解释： 0000 1100</td>
+</tr>
+<tr>
+<td>|</td>
+<td>按位或运算符：只要对应的二个二进位有一个为1时，结果位就为1。</td>
+<td>(a | b) 输出结果 61 ，二进制解释： 0011 1101</td>
+</tr>
+<tr>
+<td>^</td>
+<td>按位异或运算符：当两对应的二进位相异时，结果为1</td>
+<td>(a ^ b) 输出结果 49 ，二进制解释： 0011 0001</td>
+</tr>
+<tr>
+<td>~</td>
+<td>按位取反运算符：对数据的每个二进制位取反,即把1变为0,把0变为1。~x 类似于 -x-1</td>
+<td>(~a ) 输出结果 -61 ，二进制解释： 1100 0011， 在一个有符号二进制数的补码形式。</td>
+</tr>
+<tr>
+<td>&lt;&lt;</td>
+<td>左移动运算符：运算数的各二进位全部左移若干位，由”&lt;&lt;”右边的数指定移动的位数，高位丢弃，低位补0。</td>
+<td>a &lt;&lt; 2 输出结果 240 ，二进制解释： 1111 0000</td>
+</tr>
+<tr>
+<td>&gt;&gt;</td>
+<td>右移动运算符：把”&gt;&gt;”左边的运算数的各二进位全部右移若干位，”&gt;&gt;”右边的数指定移动的位数</td>
+<td>a &gt;&gt; 2 输出结果 15 ，二进制解释： 0000 1111</td>
+</tr>
+</tbody></table>
+<p>bin（）函数：输出以恶搞整数的二进制表示</p>
+<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><h5 id="复杂度分析："><a href="#复杂度分析：" class="headerlink" title="复杂度分析："></a>复杂度分析：</h5><ul>
+<li>时间复杂度、空间复杂度都是O（1）</li>
+</ul>
+<p><img src="https://img.imgdb.cn/item/6059ee018322e6675c625f2c.jpg"></p>
 
-<h3 id="解题思路一"><a href="#解题思路一" class="headerlink" title="解题思路一"></a>解题思路一</h3><p>求得是列表里面的两数和， 我定义了一个列表从第一个遍历到倒数第一个，然后用target每次遍历都减去遍历得到的值，得到另一个数。然后进行另外一次遍历，从j = i+1开始，如果list[j]的值与target-nums[i]的值相等，就返回i和j</p>
-<p>代码实现如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">twoSum</span>(<span class="params">self, nums: List[<span class="built_in">int</span>], target: <span class="built_in">int</span></span>) -&gt; List[int]:</span></span><br><span class="line">        long = <span class="built_in">len</span>(nums)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(long) :</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(i+<span class="number">1</span>,long):</span><br><span class="line">                <span class="built_in">sum</span> = nums[i] + nums[j]</span><br><span class="line">                <span class="keyword">if</span> <span class="built_in">sum</span> == target :</span><br><span class="line">                    <span class="keyword">return</span>(i, j)</span><br></pre></td></tr></table></figure>
-
-<p>运行效率如下：</p>
-<p><img src="https://img.imgdb.cn/item/604b57755aedab222cceba71.jpg" alt="两数之和"></p>
-<h5 id="考察点：int"><a href="#考察点：int" class="headerlink" title="考察点：int"></a>考察点：int</h5>
       
 
       
@@ -234,7 +275,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">两数之和</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">int</a>
         		</li>
       		
 		</ul>
@@ -301,7 +342,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2021/03/10/%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2021/03/23/461-%E6%B1%89%E6%98%8E%E8%B7%9D%E7%A6%BB/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -315,15 +356,20 @@
   
 <nav id="article-nav">
   
-    <a href="/2021/03/10/%E6%95%B4%E6%95%B0%E7%A7%AF%E5%92%8C%E5%B7%AE/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2021/03/23/1588-%E6%89%80%E6%9C%89%E5%A5%87%E6%95%B0%E5%AD%90%E6%95%B0%E7%BB%84%E7%9A%84%E9%95%BF%E5%BA%A6/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          1281整数各位积和之差
+          1588-所有奇数数组的长度
         
       </div>
     </a>
   
+  
+    <a href="/2021/03/23/832-%E7%BF%BB%E8%BD%AC%E5%9B%BE%E5%83%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">461-汉明距离</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
 </nav>
 
