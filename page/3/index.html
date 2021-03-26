@@ -159,6 +159,444 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-1168比赛中配对次数" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/20/1168%E6%AF%94%E8%B5%9B%E4%B8%AD%E9%85%8D%E5%AF%B9%E6%AC%A1%E6%95%B0/">1168比赛中的配对次数</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/20/1168%E6%AF%94%E8%B5%9B%E4%B8%AD%E9%85%8D%E5%AF%B9%E6%AC%A1%E6%95%B0/" class="archive-article-date">
+  	<time datetime="2021-03-20T13:52:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述;"></a>题目描述;</h4><blockquote>
+<p>给你一个整数 n ，表示比赛中的队伍数。比赛遵循一种独特的赛制：</p>
+<p>如果当前队伍数是 偶数 ，那么每支队伍都会与另一支队伍配对。总共进行 n / 2 场比赛，且产生 n / 2 支队伍进入下一轮。<br>如果当前队伍数为 奇数 ，那么将会随机轮空并晋级一支队伍，其余的队伍配对。总共进行 (n - 1) / 2 场比赛，且产生 (n - 1) / 2 + 1 支队伍进入下一轮。<br>返回在比赛中进行的配对次数，直到决出获胜队伍为止。</p>
+<p> </p>
+<p>示例 1：</p>
+<p>输入：n = 7<br>输出：6<br>解释：比赛详情：</p>
+<ul>
+<li>第 1 轮：队伍数 = 7 ，配对次数 = 3 ，4 支队伍晋级。</li>
+<li>第 2 轮：队伍数 = 4 ，配对次数 = 2 ，2 支队伍晋级。</li>
+<li>第 3 轮：队伍数 = 2 ，配对次数 = 1 ，决出 1 支获胜队伍。<br>总配对次数 = 3 + 2 + 1 = 6<br>示例 2：</li>
+</ul>
+<p>输入：n = 14<br>输出：13<br>解释：比赛详情：</p>
+<ul>
+<li>第 1 轮：队伍数 = 14 ，配对次数 = 7 ，7 支队伍晋级。</li>
+<li>第 2 轮：队伍数 = 7 ，配对次数 = 3 ，4 支队伍晋级。 </li>
+<li>第 3 轮：队伍数 = 4 ，配对次数 = 2 ，2 支队伍晋级。</li>
+<li>第 4 轮：队伍数 = 2 ，配对次数 = 1 ，决出 1 支获胜队伍。<br>总配对次数 = 7 + 3 + 2 + 1 = 13</li>
+</ul>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/count-of-matches-in-tournament">https://leetcode-cn.com/problems/count-of-matches-in-tournament</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+</blockquote>
+<h4 id="思路分析："><a href="#思路分析：" class="headerlink" title="思路分析："></a>思路分析：</h4><p>很简单的题目，只有一个输入和一个输出，根据题目意思，如果比赛的队伍数大于一，就继续下一轮比赛，每次比赛使得剩余队伍 n 减半，如果只剩下一个队伍，就可以输入结果</p>
+<h4 id="代码实现："><a href="#代码实现：" class="headerlink" title="代码实现："></a>代码实现：</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">numberOfMatches</span>(<span class="params">self, n: <span class="built_in">int</span></span>) -&gt; int:</span></span><br><span class="line">        result = <span class="number">0</span></span><br><span class="line">        <span class="keyword">while</span> n&gt;<span class="number">1</span>:</span><br><span class="line">            <span class="keyword">if</span> n%<span class="number">2</span> == <span class="number">0</span>: </span><br><span class="line">                temp = n/<span class="number">2</span></span><br><span class="line">                n = temp</span><br><span class="line">                result += temp</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                temp = n//<span class="number">2</span></span><br><span class="line">                result += temp</span><br><span class="line">                n = temp +<span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">int</span>(result)</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="涉及知识点："><a href="#涉及知识点：" class="headerlink" title="涉及知识点："></a>涉及知识点：</h4><p>python3中，a//b用来求a除以b的到的结果，结果舍去小数部分，</p>
+<p>如</p>
+<p>5/4    得到的结果是为    1</p>
+<p>a%b是求a除以b的余数</p>
+<p>如   4%3   的结果是  1</p>
+<p>####结果如下：</p>
+<p>效率还可以</p>
+<p><img src="https://img.imgdb.cn/item/60560552524f85ce29f0cc81.jpg"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">int</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/20/1168%E6%AF%94%E8%B5%9B%E4%B8%AD%E9%85%8D%E5%AF%B9%E6%AC%A1%E6%95%B0/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-1295-统计位数为偶数的数字" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/18/1295-%E7%BB%9F%E8%AE%A1%E4%BD%8D%E6%95%B0%E4%B8%BA%E5%81%B6%E6%95%B0%E7%9A%84%E6%95%B0%E5%AD%97/">1295 统计位数为偶数的数字</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/18/1295-%E7%BB%9F%E8%AE%A1%E4%BD%8D%E6%95%B0%E4%B8%BA%E5%81%B6%E6%95%B0%E7%9A%84%E6%95%B0%E5%AD%97/" class="archive-article-date">
+  	<time datetime="2021-03-18T07:52:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h3><blockquote>
+<p>给你一个整数数组 nums，请你返回其中位数为 偶数 的数字的个数。</p>
+<p> </p>
+<p>示例 1：</p>
+<p>输入：nums = [12,345,2,6,7896]<br>输出：2<br>解释：<br>12 是 2 位数字（位数为偶数） <br>345 是 3 位数字（位数为奇数）  <br>2 是 1 位数字（位数为奇数） <br>6 是 1 位数字 位数为奇数） <br>7896 是 4 位数字（位数为偶数）  <br>因此只有 12 和 7896 是位数为偶数的数字<br>示例 2：</p>
+<p>输入：nums = [555,901,482,1771]<br>输出：1<br>解释：<br>只有 1771 是位数为偶数的数字。</p>
+<p>提示：</p>
+<p>1 &lt;= nums.length &lt;= 500<br>1 &lt;= nums[i] &lt;= 10^5</p>
+</blockquote>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/find-numbers-with-even-number-of-digits">https://leetcode-cn.com/problems/find-numbers-with-even-number-of-digits</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+<h4 id="解题思路："><a href="#解题思路：" class="headerlink" title="解题思路："></a>解题思路：</h4><p>​    实现很简单，我的思路是遍历list中所有的元素，将其转化为str，因为str有len的方法，可以用len直接得到字符串的长度。得到长度后，判断长度是奇数偶数，偶数，就在计数器中 +1 ，如果是奇数，就继续下一次判断。</p>
+<ul>
+<li><p>代码实现如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">findNumbers</span>(<span class="params">self, nums: List[<span class="built_in">int</span>]</span>) -&gt; int:</span></span><br><span class="line">        result = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> item <span class="keyword">in</span> nums:</span><br><span class="line">            st = <span class="built_in">str</span>(item)</span><br><span class="line">            long = <span class="built_in">len</span>(st)</span><br><span class="line">            <span class="keyword">if</span> long % <span class="number">2</span> == <span class="number">0</span>:</span><br><span class="line">                result += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>​</p>
+</li>
+</ul>
+<p>效率还可以，但内存占用有点大： </p>
+<p><img src="https://img.imgdb.cn/item/6052f968524f85ce293f1f51.jpg" alt="统计偶数"></p>
+<h4 id=""><a href="#" class="headerlink" title=""></a></h4>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">list</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/18/1295-%E7%BB%9F%E8%AE%A1%E4%BD%8D%E6%95%B0%E4%B8%BA%E5%81%B6%E6%95%B0%E7%9A%84%E6%95%B0%E5%AD%97/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-1281整数各位积和之差" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/18/1281%E6%95%B4%E6%95%B0%E5%90%84%E4%BD%8D%E7%A7%AF%E5%92%8C%E4%B9%8B%E5%B7%AE/">1281整数各位积和之差</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/18/1281%E6%95%B4%E6%95%B0%E5%90%84%E4%BD%8D%E7%A7%AF%E5%92%8C%E4%B9%8B%E5%B7%AE/" class="archive-article-date">
+  	<time datetime="2021-03-18T06:52:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>##题目描述：</p>
+<p>给你一个非负整数 num ，请你返回将它变成 0 所需要的步数。 如果当前数字是偶数，你需要把它除以 2 ；否则，减去 1 。</p>
+<ul>
+<li>示例 1：</li>
+</ul>
+<blockquote>
+<p>输入：num = 14<br>输出：6<br>解释：<br>步骤 1) 14 是偶数，除以 2 得到 7 。<br>步骤 2） 7 是奇数，减 1 得到 6 。<br>步骤 3） 6 是偶数，除以 2 得到 3 。<br>步骤 4） 3 是奇数，减 1 得到 2 。<br>步骤 5） 2 是偶数，除以 2 得到 1 。<br>步骤 6） 1 是奇数，减 1 得到 0 。<br>示例 2：</p>
+<p>输入：num = 8<br>输出：4<br>解释：<br>步骤 1） 8 是偶数，除以 2 得到 4 。<br>步骤 2） 4 是偶数，除以 2 得到 2 。<br>步骤 3） 2 是偶数，除以 2 得到 1 。<br>步骤 4） 1 是奇数，减 1 得到 0 。<br>示例 3：</p>
+<p>输入：num = 123<br>输出：12</p>
+</blockquote>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/number-of-steps-to-reduce-a-number-to-zero">https://leetcode-cn.com/problems/number-of-steps-to-reduce-a-number-to-zero</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+<h2 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h2><p>​    这题很简单，两个判断就可以解决，一个判断用来判断输入是否为零，另一个判断判断是奇数还是偶数</p>
+<p>​        直接上代码吧：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">numberOfSteps</span> (<span class="params">self, num: <span class="built_in">int</span></span>) -&gt; int:</span></span><br><span class="line">        skip = <span class="number">0</span></span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            <span class="keyword">if</span> num != <span class="number">0</span>:</span><br><span class="line">                <span class="keyword">if</span> num % <span class="number">2</span>== <span class="number">0</span>:</span><br><span class="line">                    num = num/<span class="number">2</span></span><br><span class="line">                    skip += <span class="number">1</span></span><br><span class="line">                <span class="keyword">else</span> :</span><br><span class="line">                    num -=<span class="number">1</span></span><br><span class="line">                    skip += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span> :</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">return</span> skip</span><br></pre></td></tr></table></figure>
+
+<p>也没有涉及什么特殊的知识点，就if和whlie判断。运行效率还可以： </p>
+<p><img src="https://img.imgdb.cn/item/6052f4c7524f85ce293c4fee.jpg" alt="将数字变为零"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">int</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/18/1281%E6%95%B4%E6%95%B0%E5%90%84%E4%BD%8D%E7%A7%AF%E5%92%8C%E4%B9%8B%E5%B7%AE/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-0009回文数" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/15/0009%E5%9B%9E%E6%96%87%E6%95%B0/">0009-回文数</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/15/0009%E5%9B%9E%E6%96%87%E6%95%B0/" class="archive-article-date">
+  	<time datetime="2021-03-15T13:52:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><p>给你一个整数 x ，如果 x 是一个回文整数，返回 true ；否则，返回 false 。</p>
+<p>回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。例如，121 是回文，而 123 不是。</p>
+<p> </p>
+<p>示例 1：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">输入：<span class="keyword">x</span> <span class="operator">=</span> <span class="number">121</span></span><br><span class="line">输出：<span class="keyword">true</span></span><br><span class="line">示例 <span class="number">2</span>：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p><code>输入：x = -121</code><br><code>输出：false</code><br><code>解释：从左向右读, 为 -121 。 从右向左读, 为 121- 。因此它不是一个回文数。</code><br><code>示例 3：</code></p>
+<p>输<code>入：x = 10</code><br><code>输出：false</code><br><code>解释：从右向左读, 为 01 。因此它不是一个回文数。</code><br><code>示例 4：</code></p>
+<p><code>输入：x = -101</code><br><code>输出：false</code></p>
+<p>提示：</p>
+<p><code>-231 &lt;= x &lt;= 231 - 1</code></p>
+<p>进阶：你能不将整数转为字符串来解决这个问题吗？</p>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/palindrome-number">https://leetcode-cn.com/problems/palindrome-number</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+<h4 id="解题思路："><a href="#解题思路：" class="headerlink" title="解题思路："></a>解题思路：</h4><p>这题跟和与积差不多的思想，同样有两种方式：</p>
+<p>1、模10得出每一位数字，然后组合判断；</p>
+<p>2、转化字符串，切片判断。</p>
+<p>代码实现：`</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">isPalindrome</span>(<span class="params">self, x: <span class="built_in">int</span></span>) -&gt; bool:</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> x&gt;=<span class="number">0</span>:</span><br><span class="line">            k = <span class="built_in">abs</span>(x)</span><br><span class="line">            t = <span class="built_in">list</span>(<span class="built_in">map</span>(<span class="built_in">int</span>,<span class="built_in">str</span>(k)))</span><br><span class="line">            a = t[::-<span class="number">1</span>]</span><br><span class="line">            <span class="keyword">if</span> a==t:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">else</span> :<span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        <span class="keyword">else</span>:<span class="keyword">return</span> <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+
+<p>运行效果： </p>
+<p><img src="https://img.imgdb.cn/item/604f65b25aedab222cba10d5.jpg" alt="回文数"></p>
+<h4 id="涉及知识复习："><a href="#涉及知识复习：" class="headerlink" title="涉及知识复习："></a>涉及知识复习：</h4><p>字符串切片</p>
+<p>用法：</p>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">字符串对象[heard:<span class="keyword">end</span>:stip]</span><br><span class="line"><span class="symbol">heard:</span>切片开始位置（不包含该位置）；</span><br><span class="line"><span class="keyword">end</span>：切片结束位置(不包含该位置）；</span><br><span class="line">stip：步长，就是下一个字符与上一个字符之间的距离。</span><br></pre></td></tr></table></figure>
+
+<h5 id="eg"><a href="#eg" class="headerlink" title="eg"></a>eg</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a = <span class="string">&#x27;12345&#x27;</span></span><br><span class="line">a[<span class="number">1</span>::]</span><br><span class="line">a[:<span class="number">1</span>:]</span><br><span class="line">a[<span class="number">1</span>:<span class="number">1</span>:]</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img.imgdb.cn/item/604f64de5aedab222cb99f60.jpg" alt="切片"></p>
+<h5 id="考察点：int"><a href="#考察点：int" class="headerlink" title="考察点：int"></a>考察点：int</h5>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">int</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/15/0009%E5%9B%9E%E6%96%87%E6%95%B0/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-1313解压缩编码列表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -758,11 +1196,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">二进制</a>
+                <a href="javascript:void(0)" class="js-tag color4">str</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">str</a>
+                <a href="javascript:void(0)" class="js-tag color1">class</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">二进制</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -771,6 +1213,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">单向链表</a>
               </li>
             
             <div class="clearfix"></div>
