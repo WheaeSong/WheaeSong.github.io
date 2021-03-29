@@ -159,6 +159,316 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-1450-在既定时间完成作业的学生人数" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/21/1450-%E5%9C%A8%E6%97%A2%E5%AE%9A%E6%97%B6%E9%97%B4%E5%AE%8C%E6%88%90%E4%BD%9C%E4%B8%9A%E7%9A%84%E5%AD%A6%E7%94%9F%E4%BA%BA%E6%95%B0/">1450-在既定时间完成作业的学生人数</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/21/1450-%E5%9C%A8%E6%97%A2%E5%AE%9A%E6%97%B6%E9%97%B4%E5%AE%8C%E6%88%90%E4%BD%9C%E4%B8%9A%E7%9A%84%E5%AD%A6%E7%94%9F%E4%BA%BA%E6%95%B0/" class="archive-article-date">
+  	<time datetime="2021-03-21T06:16:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id=""><a href="#" class="headerlink" title=""></a></h3><h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
+<p>给你两个整数数组 startTime（开始时间）和 endTime（结束时间），并指定一个整数 queryTime 作为查询时间。</p>
+<p>已知，第 i 名学生在 startTime[i] 时开始写作业并于 endTime[i] 时完成作业。</p>
+<p>请返回在查询时间 queryTime 时正在做作业的学生人数。形式上，返回能够使 queryTime 处于区间 [startTime[i], endTime[i]]（含）的学生人数。</p>
+<p> </p>
+<p>示例 1：</p>
+<p>输入：startTime = [1,2,3], endTime = [3,2,7], queryTime = 4<br>输出：1<br>解释：一共有 3 名学生。<br>第一名学生在时间 1 开始写作业，并于时间 3 完成作业，在时间 4 没有处于做作业的状态。<br>第二名学生在时间 2 开始写作业，并于时间 2 完成作业，在时间 4 没有处于做作业的状态。<br>第三名学生在时间 3 开始写作业，预计于时间 7 完成作业，这是是唯一一名在时间 4 时正在做作业的学生。<br>示例 2：</p>
+<p>输入：startTime = [4], endTime = [4], queryTime = 4<br>输出：1<br>解释：在查询时间只有一名学生在做作业。<br>示例 3：</p>
+<p>输入：startTime = [4], endTime = [4], queryTime = 5<br>输出：0<br>示例 4：</p>
+<p>输入：startTime = [1,1,1,1], endTime = [1,3,2,4], queryTime = 7<br>输出：0<br>示例 5：</p>
+<p>输入：startTime = [9,8,7,6,5,4,3,2,1], endTime = [10,10,10,10,10,10,10,10,10], queryTime = 5<br>输出：5</p>
+</blockquote>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/number-of-students-doing-homework-at-a-given-time">https://leetcode-cn.com/problems/number-of-students-doing-homework-at-a-given-time</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+<h4 id="思路分析"><a href="#思路分析" class="headerlink" title="思路分析"></a>思路分析</h4><p>​    这题看着输入输出很多，但并不复杂，有一个固定的东西——学生数是固定的，所以每个学生对应的时间段也是固定的，由此分析，只有queryTime 在该学生starttTime 和 endTime 的时间段内，就可以认为该学生在该时间段内在做作业。</p>
+<p>​    只用依次遍历，然后比较值，就可得到结果。</p>
+<h4 id="代码实现："><a href="#代码实现：" class="headerlink" title="代码实现："></a>代码实现：</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">busyStudent</span>(<span class="params">self, startTime: List[<span class="built_in">int</span>], endTime: List[<span class="built_in">int</span>], queryTime: <span class="built_in">int</span></span>) -&gt; int:</span></span><br><span class="line">        </span><br><span class="line">        result = <span class="number">0</span></span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(startTime)): </span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> startTime[i]&lt;=queryTime&lt;=endTime[i] : </span><br><span class="line">                result += <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
+
+<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><p><img src="https://img.imgdb.cn/item/6056ebb0524f85ce2951c935.jpg"></p>
+<p>时间效率很高的，只是空间效率有点低</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">list</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/21/1450-%E5%9C%A8%E6%97%A2%E5%AE%9A%E6%97%B6%E9%97%B4%E5%AE%8C%E6%88%90%E4%BD%9C%E4%B8%9A%E7%9A%84%E5%AD%A6%E7%94%9F%E4%BA%BA%E6%95%B0/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-1732-找到最高海拔" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/21/1732-%E6%89%BE%E5%88%B0%E6%9C%80%E9%AB%98%E6%B5%B7%E6%8B%94/">1732-找到最高海拔</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/21/1732-%E6%89%BE%E5%88%B0%E6%9C%80%E9%AB%98%E6%B5%B7%E6%8B%94/" class="archive-article-date">
+  	<time datetime="2021-03-21T05:16:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id=""><a href="#" class="headerlink" title=""></a></h3><h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
+<p>有一个自行车手打算进行一场公路骑行，这条路线总共由 n + 1 个不同海拔的点组成。自行车手从海拔为 0 的点 0 开始骑行。</p>
+<p>给你一个长度为 n 的整数数组 gain ，其中 gain[i] 是点 i 和点 i + 1 的 净海拔高度差（0 &lt;= i &lt; n）。请你返回 最高点的海拔 。</p>
+<p> </p>
+<p>示例 1：</p>
+<p>输入：gain = [-5,1,5,0,-7]<br>输出：1<br>解释：海拔高度依次为 [0,-5,-4,1,1,-6] 。最高海拔为 1 。<br>示例 2：</p>
+<p>输入：gain = [-4,-3,-2,-1,4,3,2]<br>输出：0<br>解释：海拔高度依次为 [0,-4,-7,-9,-10,-6,-3,-1] 。最高海拔为 0 。</p>
+<p>来源：力扣（LeetCode）</p>
+<p>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/find-the-highest-altitude">https://leetcode-cn.com/problems/find-the-highest-altitude</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+</blockquote>
+<h4 id="思路分析"><a href="#思路分析" class="headerlink" title="思路分析"></a>思路分析</h4><p>​    这题只有一个输入，是每个值代表该节点与上一个节点的海拔差，那么加上七点的海拔 0 ，可以认为一共经过len（gain）+1   个高度。</p>
+<p>且当前高度 = 上一点高度 + 高度差</p>
+<p>有点抽象，如图分析： </p>
+<p><img src="https://img.imgdb.cn/item/6056e72d524f85ce294f6678.jpg" alt="图解思路"></p>
+<h4 id="代码实现："><a href="#代码实现：" class="headerlink" title="代码实现："></a>代码实现：</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">largestAltitude</span>(<span class="params">self, gain: List[<span class="built_in">int</span>]</span>) -&gt; int:</span></span><br><span class="line">        lon = <span class="built_in">len</span>(gain)</span><br><span class="line">        result = [<span class="number">0</span>] * (lon+<span class="number">1</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(lon): </span><br><span class="line">                result[i+<span class="number">1</span>] = result[i] + gain[i]</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">max</span>(result)</span><br></pre></td></tr></table></figure>
+
+<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><p><img src="https://img.imgdb.cn/item/6056e4c6524f85ce294e5641.jpg"></p>
+<p>效率有点偏低</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">list</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/21/1732-%E6%89%BE%E5%88%B0%E6%9C%80%E9%AB%98%E6%B5%B7%E6%8B%94/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-1436-旅行终点站" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/21/1436-%E6%97%85%E8%A1%8C%E7%BB%88%E7%82%B9%E7%AB%99/">1436-旅行终点站</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/21/1436-%E6%97%85%E8%A1%8C%E7%BB%88%E7%82%B9%E7%AB%99/" class="archive-article-date">
+  	<time datetime="2021-03-20T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述;"></a>题目描述;</h4><blockquote>
+<p>给你一份旅游线路图，该线路图中的旅行线路用数组 paths 表示，其中 paths[i] = [cityAi, cityBi] 表示该线路将会从 cityAi 直接前往 cityBi 。请你找出这次旅行的终点站，即没有任何可以通往其他城市的线路的城市。</p>
+<p>题目数据保证线路图会形成一条不存在循环的线路，因此只会有一个旅行终点站。</p>
+<p> </p>
+<p>示例 1：</p>
+<p>输入：paths = [[“London”,”New York”],[“New York”,”Lima”],[“Lima”,”Sao Paulo”]]<br>输出：”Sao Paulo”<br>解释：从 “London” 出发，最后抵达终点站 “Sao Paulo” 。本次旅行的路线是 “London” -&gt; “New York” -&gt; “Lima” -&gt; “Sao Paulo” 。<br>示例 2：</p>
+<p>输入：paths = [[“B”,”C”],[“D”,”B”],[“C”,”A”]]<br>输出：”A”<br>解释：所有可能的线路是：<br>“D” -&gt; “B” -&gt; “C” -&gt; “A”. <br>“B” -&gt; “C” -&gt; “A”. <br>“C” -&gt; “A”. <br>“A”. <br>显然，旅行终点站是 “A” 。<br>示例 3：</p>
+<p>输入：paths = [[“A”,”Z”]]<br>输出：”Z”</p>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/destination-city">https://leetcode-cn.com/problems/destination-city</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+</blockquote>
+<h4 id="思路分析："><a href="#思路分析：" class="headerlink" title="思路分析："></a>思路分析：</h4><p>输入的是列表嵌套列表，内元素列表中包括两个值，一个是起点，一个是终点。</p>
+<p>我的想法是提取出所有的起点和所有的终点，然后遍历终点，如果终点集中的元素不在起点集中，就可以认为他是最终的终点，而不用去考虑中间的路径</p>
+<h4 id="代码实现："><a href="#代码实现：" class="headerlink" title="代码实现："></a>代码实现：</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">destCity</span>(<span class="params">self, paths: List[List[<span class="built_in">str</span>]]</span>) -&gt; str:</span></span><br><span class="line">        start = [i[<span class="number">0</span>] <span class="keyword">for</span> i <span class="keyword">in</span> paths]</span><br><span class="line">        end = [i[<span class="number">1</span>] <span class="keyword">for</span> i <span class="keyword">in</span> paths]</span><br><span class="line">        <span class="keyword">for</span> temp <span class="keyword">in</span> end: </span><br><span class="line">            <span class="keyword">if</span> temp <span class="keyword">not</span> <span class="keyword">in</span> start: </span><br><span class="line">                <span class="keyword">return</span> temp</span><br></pre></td></tr></table></figure>
+
+<h4 id="涉及知识点："><a href="#涉及知识点：" class="headerlink" title="涉及知识点："></a>涉及知识点：</h4><p>for的高级用法</p>
+<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><p>复杂度分析： </p>
+<ul>
+<li>时间复杂度 3n</li>
+<li>空间复杂度 2n</li>
+</ul>
+<p><img src="https://img.imgdb.cn/item/605768d28322e6675c115912.jpg" alt="结果"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">list</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/21/1436-%E6%97%85%E8%A1%8C%E7%BB%88%E7%82%B9%E7%AB%99/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-1748-唯一元素的和" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -711,349 +1021,6 @@
 
 
   
-    <article id="post-1281整数各位积和之差" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/18/1281%E6%95%B4%E6%95%B0%E5%90%84%E4%BD%8D%E7%A7%AF%E5%92%8C%E4%B9%8B%E5%B7%AE/">1281整数各位积和之差</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/18/1281%E6%95%B4%E6%95%B0%E5%90%84%E4%BD%8D%E7%A7%AF%E5%92%8C%E4%B9%8B%E5%B7%AE/" class="archive-article-date">
-  	<time datetime="2021-03-18T06:52:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id=""><a href="#" class="headerlink" title=""></a></h2><p>##题目描述：</p>
-<p>给你一个非负整数 num ，请你返回将它变成 0 所需要的步数。 如果当前数字是偶数，你需要把它除以 2 ；否则，减去 1 。</p>
-<ul>
-<li>示例 1：</li>
-</ul>
-<blockquote>
-<p>输入：num = 14<br>输出：6<br>解释：<br>步骤 1) 14 是偶数，除以 2 得到 7 。<br>步骤 2） 7 是奇数，减 1 得到 6 。<br>步骤 3） 6 是偶数，除以 2 得到 3 。<br>步骤 4） 3 是奇数，减 1 得到 2 。<br>步骤 5） 2 是偶数，除以 2 得到 1 。<br>步骤 6） 1 是奇数，减 1 得到 0 。<br>示例 2：</p>
-<p>输入：num = 8<br>输出：4<br>解释：<br>步骤 1） 8 是偶数，除以 2 得到 4 。<br>步骤 2） 4 是偶数，除以 2 得到 2 。<br>步骤 3） 2 是偶数，除以 2 得到 1 。<br>步骤 4） 1 是奇数，减 1 得到 0 。<br>示例 3：</p>
-<p>输入：num = 123<br>输出：12</p>
-</blockquote>
-<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/number-of-steps-to-reduce-a-number-to-zero">https://leetcode-cn.com/problems/number-of-steps-to-reduce-a-number-to-zero</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
-<h2 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h2><p>​    这题很简单，两个判断就可以解决，一个判断用来判断输入是否为零，另一个判断判断是奇数还是偶数</p>
-<p>​        直接上代码吧：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">numberOfSteps</span> (<span class="params">self, num: <span class="built_in">int</span></span>) -&gt; int:</span></span><br><span class="line">        skip = <span class="number">0</span></span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            <span class="keyword">if</span> num != <span class="number">0</span>:</span><br><span class="line">                <span class="keyword">if</span> num % <span class="number">2</span>== <span class="number">0</span>:</span><br><span class="line">                    num = num/<span class="number">2</span></span><br><span class="line">                    skip += <span class="number">1</span></span><br><span class="line">                <span class="keyword">else</span> :</span><br><span class="line">                    num -=<span class="number">1</span></span><br><span class="line">                    skip += <span class="number">1</span></span><br><span class="line">            <span class="keyword">else</span> :</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">return</span> skip</span><br></pre></td></tr></table></figure>
-
-<p>也没有涉及什么特殊的知识点，就if和whlie判断。运行效率还可以： </p>
-<p><img src="https://img.imgdb.cn/item/6052f4c7524f85ce293c4fee.jpg" alt="将数字变为零"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">int</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/18/1281%E6%95%B4%E6%95%B0%E5%90%84%E4%BD%8D%E7%A7%AF%E5%92%8C%E4%B9%8B%E5%B7%AE/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-0009回文数" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/15/0009%E5%9B%9E%E6%96%87%E6%95%B0/">0009-回文数</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/15/0009%E5%9B%9E%E6%96%87%E6%95%B0/" class="archive-article-date">
-  	<time datetime="2021-03-15T13:52:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><p>给你一个整数 x ，如果 x 是一个回文整数，返回 true ；否则，返回 false 。</p>
-<p>回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。例如，121 是回文，而 123 不是。</p>
-<p> </p>
-<p>示例 1：</p>
-<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">输入：<span class="keyword">x</span> <span class="operator">=</span> <span class="number">121</span></span><br><span class="line">输出：<span class="keyword">true</span></span><br><span class="line">示例 <span class="number">2</span>：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<p><code>输入：x = -121</code><br><code>输出：false</code><br><code>解释：从左向右读, 为 -121 。 从右向左读, 为 121- 。因此它不是一个回文数。</code><br><code>示例 3：</code></p>
-<p>输<code>入：x = 10</code><br><code>输出：false</code><br><code>解释：从右向左读, 为 01 。因此它不是一个回文数。</code><br><code>示例 4：</code></p>
-<p><code>输入：x = -101</code><br><code>输出：false</code></p>
-<p>提示：</p>
-<p><code>-231 &lt;= x &lt;= 231 - 1</code></p>
-<p>进阶：你能不将整数转为字符串来解决这个问题吗？</p>
-<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/palindrome-number">https://leetcode-cn.com/problems/palindrome-number</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
-<h4 id="解题思路："><a href="#解题思路：" class="headerlink" title="解题思路："></a>解题思路：</h4><p>这题跟和与积差不多的思想，同样有两种方式：</p>
-<p>1、模10得出每一位数字，然后组合判断；</p>
-<p>2、转化字符串，切片判断。</p>
-<p>代码实现：`</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">isPalindrome</span>(<span class="params">self, x: <span class="built_in">int</span></span>) -&gt; bool:</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> x&gt;=<span class="number">0</span>:</span><br><span class="line">            k = <span class="built_in">abs</span>(x)</span><br><span class="line">            t = <span class="built_in">list</span>(<span class="built_in">map</span>(<span class="built_in">int</span>,<span class="built_in">str</span>(k)))</span><br><span class="line">            a = t[::-<span class="number">1</span>]</span><br><span class="line">            <span class="keyword">if</span> a==t:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">else</span> :<span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        <span class="keyword">else</span>:<span class="keyword">return</span> <span class="literal">False</span></span><br></pre></td></tr></table></figure>
-
-<p>运行效果： </p>
-<p><img src="https://img.imgdb.cn/item/604f65b25aedab222cba10d5.jpg" alt="回文数"></p>
-<h4 id="涉及知识复习："><a href="#涉及知识复习：" class="headerlink" title="涉及知识复习："></a>涉及知识复习：</h4><p>字符串切片</p>
-<p>用法：</p>
-<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">字符串对象[heard:<span class="keyword">end</span>:stip]</span><br><span class="line"><span class="symbol">heard:</span>切片开始位置（不包含该位置）；</span><br><span class="line"><span class="keyword">end</span>：切片结束位置(不包含该位置）；</span><br><span class="line">stip：步长，就是下一个字符与上一个字符之间的距离。</span><br></pre></td></tr></table></figure>
-
-<h5 id="eg"><a href="#eg" class="headerlink" title="eg"></a>eg</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">a = <span class="string">&#x27;12345&#x27;</span></span><br><span class="line">a[<span class="number">1</span>::]</span><br><span class="line">a[:<span class="number">1</span>:]</span><br><span class="line">a[<span class="number">1</span>:<span class="number">1</span>:]</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img.imgdb.cn/item/604f64de5aedab222cb99f60.jpg" alt="切片"></p>
-<h5 id="考察点：int"><a href="#考察点：int" class="headerlink" title="考察点：int"></a>考察点：int</h5>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">int</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/15/0009%E5%9B%9E%E6%96%87%E6%95%B0/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-1313解压缩编码列表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/15/1313%E8%A7%A3%E5%8E%8B%E7%BC%A9%E7%BC%96%E7%A0%81%E5%88%97%E8%A1%A8/">1313-解压缩编码列表</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/15/1313%E8%A7%A3%E5%8E%8B%E7%BC%A9%E7%BC%96%E7%A0%81%E5%88%97%E8%A1%A8/" class="archive-article-date">
-  	<time datetime="2021-03-15T13:16:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>###题目描述：</p>
-<p>​        给你一个以行程长度编码压缩的整数列表 nums 。</p>
-<p>考虑每对相邻的两个元素 [freq, val] = [nums[2<em>i], nums[2</em>i+1]] （其中 i &gt;= 0 ），每一对都表示解压后子列表中有 freq 个值为 val 的元素，你需要从左到右连接所有子列表以生成解压后的列表。</p>
-<p>请你返回解压后的列表。</p>
-<p> #### 示例 1：</p>
-<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = <span class="comment">[1,2,3,4]</span></span><br><span class="line">输出：<span class="comment">[2,4,4,4]</span></span><br><span class="line">解释：第一对 <span class="comment">[1,2]</span> 代表着 2 的出现频次为 1，所以生成数组 <span class="comment">[2]</span>。</span><br><span class="line">第二对 <span class="comment">[3,4]</span> 代表着 4 的出现频次为 3，所以生成数组 <span class="comment">[4,4,4]</span>。</span><br><span class="line">最后将它们串联到一起 <span class="comment">[2]</span> + <span class="comment">[4,4,4]</span> = <span class="comment">[2,4,4,4]</span>。</span><br></pre></td></tr></table></figure>
-
-
-
-<p>####示例 2：</p>
-<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：nums = <span class="comment">[1,1,2,3]</span></span><br><span class="line">输出：<span class="comment">[1,3,3]</span></span><br></pre></td></tr></table></figure>
-
-
-
-
-<p>提示：</p>
-<p>2 &lt;= nums.length &lt;= 100<br>nums.length % 2 == 0<br>1 &lt;= nums[i] &lt;= 100</p>
-<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/decompress-run-length-encoded-list">https://leetcode-cn.com/problems/decompress-run-length-encoded-list</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
-<h4 id="解题思路："><a href="#解题思路：" class="headerlink" title="解题思路："></a>解题思路：</h4><p>​    由题可知，每两个相邻的元素分为一组，我首先想到的思路是把列表切片，各隔一个切一次，分为两组，一组以0开始，一组以一开始。</p>
-<p>​    如此就可得到两个列表，一个为freq列表，一个为val列表。这样，我只用一次遍历，每次遍历取出freq[i]和val[i]，用val乘以freq，即把val重复freq次存入一个新的数组，最后得到的就是所要求的答案</p>
-<p>###代码实现： </p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">decompressRLElist</span>(<span class="params">self, nums: List[<span class="built_in">int</span>]</span>) -&gt; List[int]:</span></span><br><span class="line">        value = nums[::<span class="number">2</span>]</span><br><span class="line">        num = nums[<span class="number">1</span>::<span class="number">2</span>]</span><br><span class="line">        item = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(value)):</span><br><span class="line">            item += value[i]*[<span class="built_in">str</span>(num[i])]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> [<span class="built_in">int</span>(k) <span class="keyword">for</span> k <span class="keyword">in</span> item]</span><br></pre></td></tr></table></figure>
-
-
-
-<p>####涉及知识点复习： </p>
-<p>for的高级用法，[int[k] for k in item]，需要先定义k，用法如下：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[ 对i的操作 for i in 列表 ]</span><br></pre></td></tr></table></figure>
-
-<p>相当于：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> 列表:</span><br><span class="line">    [].append(对i的操作)</span><br></pre></td></tr></table></figure>
-
-<h4 id="知识扩展："><a href="#知识扩展：" class="headerlink" title="知识扩展："></a>知识扩展：</h4><p>​    双层 for 循环： </p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[对i的操作 <span class="keyword">for</span> 单个元素 <span class="keyword">in</span> 列表 <span class="keyword">for</span> i <span class="keyword">in</span> 单个元素]</span><br></pre></td></tr></table></figure>
-
-<h5 id="类似于"><a href="#类似于" class="headerlink" title="类似于:"></a>类似于:</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">y_list = [<span class="string">&#x27;aaa&#x27;</span>,<span class="string">&#x27;dvv&#x27;</span>]:</span><br><span class="line">	<span class="keyword">for</span> y <span class="keyword">in</span> y_list:</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> y:</span><br><span class="line">            [].append(i)</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img.imgdb.cn/item/604f5c6c5aedab222cb4a3d9.jpg" alt="输出结果"></p>
-<p>同样的，还有 if 的简写： </p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y = <span class="number">0</span></span><br><span class="line">x = y +<span class="number">3</span> <span class="keyword">if</span> y&gt;<span class="number">1</span> <span class="keyword">else</span> y-<span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://img.imgdb.cn/item/604f5d115aedab222cb4ff42.jpg" alt="if简写"></p>
-<h4 id="考察点：列表"><a href="#考察点：列表" class="headerlink" title="考察点：列表"></a>考察点：列表</h4>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">列表</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/15/1313%E8%A7%A3%E5%8E%8B%E7%BC%A9%E7%BC%96%E7%A0%81%E5%88%97%E8%A1%A8/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">Next &amp;raquo;</a>
@@ -1183,11 +1150,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">面经</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">单向链表</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">面经</a>
+                <a href="javascript:void(0)" class="js-tag color1">最小高度树</a>
               </li>
             
             <div class="clearfix"></div>
