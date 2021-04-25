@@ -557,125 +557,6 @@
 
 
   
-    <article id="post-58-最后一个单词的长度" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/22/58-%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E5%8D%95%E8%AF%8D%E7%9A%84%E9%95%BF%E5%BA%A6/">58-最后一个单词的长度</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/22/58-%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E5%8D%95%E8%AF%8D%E7%9A%84%E9%95%BF%E5%BA%A6/" class="archive-article-date">
-  	<time datetime="2021-03-21T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
-<p>给你一个字符串 s，由若干单词组成，单词之间用空格隔开。返回字符串中最后一个单词的长度。如果不存在最后一个单词，请返回 0 。</p>
-<p>单词 是指仅由字母组成、不包含任何空格字符的最大子字符串。</p>
-<p> </p>
-<p>示例 1：</p>
-<p>输入：s = “Hello World”<br>输出：5<br>示例 2：</p>
-<p>输入：s = “ “<br>输出：0</p>
-<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/length-of-last-word">https://leetcode-cn.com/problems/length-of-last-word</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
-</blockquote>
-<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>将 str 输入转换为list，然后取出list最后一个元素的长度就是所求值。</p>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">lengthOfLastWord</span>(<span class="params">self, s: <span class="built_in">str</span></span>) -&gt; int:</span></span><br><span class="line">        result = s.split()</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(result):</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">len</span>(result[-<span class="number">1</span>])</span><br><span class="line">        <span class="keyword">else</span> :</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><p>split（）</p>
-<p>split()函数是一个将 str 转换为 list的 快捷方法，用法如下： </p>
-<p><code>str.split(str=&quot;&quot;, num=string.count(str))</code></p>
-<h5 id="参数说明："><a href="#参数说明：" class="headerlink" title="参数说明："></a>参数说明：</h5><ul>
-<li><p>str – 分隔符，默认为所有的空字符，包括空格、换行(\n)、制表符(\t)等。</p>
-</li>
-<li><p>num – 分割次数。默认为 -1, 即分隔所有。</p>
-<p>示例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"> </span><br><span class="line"><span class="built_in">str</span> = <span class="string">&quot;this is string example....wow!!!&quot;</span></span><br><span class="line"><span class="built_in">print</span> (<span class="built_in">str</span>.split( ))       <span class="comment"># 以空格为分隔符</span></span><br><span class="line"><span class="built_in">print</span> (<span class="built_in">str</span>.split(<span class="string">&#x27;i&#x27;</span>,<span class="number">1</span>))   <span class="comment"># 以 i 为分隔符</span></span><br><span class="line"><span class="built_in">print</span> (<span class="built_in">str</span>.split(<span class="string">&#x27;w&#x27;</span>))     <span class="comment"># 以 w 为分隔符</span></span><br></pre></td></tr></table></figure>
-
-<p>输出如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&#x27;this&#x27;</span>, <span class="string">&#x27;is&#x27;</span>, <span class="string">&#x27;string&#x27;</span>, <span class="string">&#x27;example....wow!!!&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;th&#x27;</span>, <span class="string">&#x27;s is string example....wow!!!&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;this is string example....&#x27;</span>, <span class="string">&#x27;o&#x27;</span>, <span class="string">&#x27;!!!&#x27;</span>]</span><br></pre></td></tr></table></figure>
-
-<p>​</p>
-<p>​</p>
-<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><h5 id="复杂度分析："><a href="#复杂度分析：" class="headerlink" title="复杂度分析："></a>复杂度分析：</h5><ul>
-<li>时间复杂度、空间复杂度都是O（1）</li>
-</ul>
-<p><img src="https://img.imgdb.cn/item/6058811e8322e6675c984f1c.jpg"></p>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">str</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/22/58-%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E5%8D%95%E8%AF%8D%E7%9A%84%E9%95%BF%E5%BA%A6/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-191-位1的个数" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -767,6 +648,125 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/03/22/191-%E4%BD%8D1%E7%9A%84%E4%B8%AA%E6%95%B0/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-58-最后一个单词的长度" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/22/58-%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E5%8D%95%E8%AF%8D%E7%9A%84%E9%95%BF%E5%BA%A6/">58-最后一个单词的长度</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/22/58-%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E5%8D%95%E8%AF%8D%E7%9A%84%E9%95%BF%E5%BA%A6/" class="archive-article-date">
+  	<time datetime="2021-03-21T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
+<p>给你一个字符串 s，由若干单词组成，单词之间用空格隔开。返回字符串中最后一个单词的长度。如果不存在最后一个单词，请返回 0 。</p>
+<p>单词 是指仅由字母组成、不包含任何空格字符的最大子字符串。</p>
+<p> </p>
+<p>示例 1：</p>
+<p>输入：s = “Hello World”<br>输出：5<br>示例 2：</p>
+<p>输入：s = “ “<br>输出：0</p>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/length-of-last-word">https://leetcode-cn.com/problems/length-of-last-word</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+</blockquote>
+<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>将 str 输入转换为list，然后取出list最后一个元素的长度就是所求值。</p>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">lengthOfLastWord</span>(<span class="params">self, s: <span class="built_in">str</span></span>) -&gt; int:</span></span><br><span class="line">        result = s.split()</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(result):</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">len</span>(result[-<span class="number">1</span>])</span><br><span class="line">        <span class="keyword">else</span> :</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><p>split（）</p>
+<p>split()函数是一个将 str 转换为 list的 快捷方法，用法如下： </p>
+<p><code>str.split(str=&quot;&quot;, num=string.count(str))</code></p>
+<h5 id="参数说明："><a href="#参数说明：" class="headerlink" title="参数说明："></a>参数说明：</h5><ul>
+<li><p>str – 分隔符，默认为所有的空字符，包括空格、换行(\n)、制表符(\t)等。</p>
+</li>
+<li><p>num – 分割次数。默认为 -1, 即分隔所有。</p>
+<p>示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"> </span><br><span class="line"><span class="built_in">str</span> = <span class="string">&quot;this is string example....wow!!!&quot;</span></span><br><span class="line"><span class="built_in">print</span> (<span class="built_in">str</span>.split( ))       <span class="comment"># 以空格为分隔符</span></span><br><span class="line"><span class="built_in">print</span> (<span class="built_in">str</span>.split(<span class="string">&#x27;i&#x27;</span>,<span class="number">1</span>))   <span class="comment"># 以 i 为分隔符</span></span><br><span class="line"><span class="built_in">print</span> (<span class="built_in">str</span>.split(<span class="string">&#x27;w&#x27;</span>))     <span class="comment"># 以 w 为分隔符</span></span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&#x27;this&#x27;</span>, <span class="string">&#x27;is&#x27;</span>, <span class="string">&#x27;string&#x27;</span>, <span class="string">&#x27;example....wow!!!&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;th&#x27;</span>, <span class="string">&#x27;s is string example....wow!!!&#x27;</span>]</span><br><span class="line">[<span class="string">&#x27;this is string example....&#x27;</span>, <span class="string">&#x27;o&#x27;</span>, <span class="string">&#x27;!!!&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>​</p>
+<p>​</p>
+<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><h5 id="复杂度分析："><a href="#复杂度分析：" class="headerlink" title="复杂度分析："></a>复杂度分析：</h5><ul>
+<li>时间复杂度、空间复杂度都是O（1）</li>
+</ul>
+<p><img src="https://img.imgdb.cn/item/6058811e8322e6675c984f1c.jpg"></p>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">str</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/22/58-%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E5%8D%95%E8%AF%8D%E7%9A%84%E9%95%BF%E5%BA%A6/">展开全文 >></a>
         </p>
       
 
@@ -1238,11 +1238,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">class</a>
+                <a href="javascript:void(0)" class="js-tag color4">str</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">str</a>
+                <a href="javascript:void(0)" class="js-tag color1">class</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1254,11 +1254,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Mysql</a>
+                <a href="javascript:void(0)" class="js-tag color3">模拟</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">模拟</a>
+                <a href="javascript:void(0)" class="js-tag color1">Mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1266,15 +1266,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">二维数组</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">面经</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1282,11 +1274,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">最小高度树</a>
+                <a href="javascript:void(0)" class="js-tag color5">二维数组</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">面经</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">单向链表</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">最小高度树</a>
               </li>
             
             <div class="clearfix"></div>
