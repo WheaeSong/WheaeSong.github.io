@@ -159,6 +159,129 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-面0402-最小高度树" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/29/%E9%9D%A20402-%E6%9C%80%E5%B0%8F%E9%AB%98%E5%BA%A6%E6%A0%91/">面试题04-02-最小高度树</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/29/%E9%9D%A20402-%E6%9C%80%E5%B0%8F%E9%AB%98%E5%BA%A6%E6%A0%91/" class="archive-article-date">
+  	<time datetime="2021-03-28T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
+<p>给定一个有序整数数组，元素各不相同且按升序排列，编写一个算法，创建一棵高度最小的二叉搜索树。</p>
+<p>示例:<br>给定有序数组: [-10,-3,0,5,9],</p>
+<p>一个可能的答案是：[0,-3,9,-10,null,5]，它可以表示下面这个高度平衡二叉搜索树：</p>
+<pre><code>     0 
+    / \ 
+  -3   9 
+  /   / 
+-10  5 
+</code></pre>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/minimum-height-tree-lcci">https://leetcode-cn.com/problems/minimum-height-tree-lcci</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+</blockquote>
+<p>​    </p>
+<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>​        首先回头复习了二叉搜索树的概念，但没找到。找到‘查找二叉树’（二叉排序树），在翻看了评论区大佬们的讨论，才明白其实就是一回事。</p>
+<p>查找二叉树满足下列条件： </p>
+<ul>
+<li><p>查找二叉树的左右各是一棵查找树</p>
+</li>
+<li><p>若查找树的左右子树非空，则左右子树各个端点值都小于根节点的值</p>
+</li>
+<li><p>同样，右子树的值都大于根节点的值</p>
+<p>还有另外一个性质，就是查找二叉树的中序遍历的结果是升序</p>
+<p>那就有思路了：</p>
+<ul>
+<li>首先中间节点必为根</li>
+<li>递归调用，将左右节点当作根，就能得到该节点的左右节点</li>
+</ul>
+</li>
+</ul>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"># class TreeNode:</span></span><br><span class="line"><span class="comment">#     def __init__(self, x):</span></span><br><span class="line"><span class="comment">#         self.val = x</span></span><br><span class="line"><span class="comment">#         self.left = None</span></span><br><span class="line"><span class="comment">#         self.right = None</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sortedArrayToBST</span>(<span class="params">self, nums: List[<span class="built_in">int</span>]</span>) -&gt; TreeNode:</span></span><br><span class="line">        mid = <span class="built_in">len</span>(nums) // <span class="number">2</span></span><br><span class="line">        <span class="keyword">if</span> nums: </span><br><span class="line">            root = TreeNode(nums[mid])</span><br><span class="line">            root.left = self.sortedArrayToBST(nums[:mid:])</span><br><span class="line">            root.right = self.sortedArrayToBST(nums[mid+<span class="number">1</span>::])</span><br><span class="line">            <span class="keyword">return</span> root</span><br><span class="line">                </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><p>​    查找二叉树插入节点：</p>
+<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><ul>
+<li>log（n）（二分查找）</li>
+<li>空间复杂度O（n）</li>
+</ul>
+<p><img src="https://img.imgdb.cn/item/6061dc218322e6675c1d9db6.jpg"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">最小高度树</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/29/%E9%9D%A20402-%E6%9C%80%E5%B0%8F%E9%AB%98%E5%BA%A6%E6%A0%91/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-1221-分割平衡字符串" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -766,109 +889,6 @@
 
 
   
-    <article id="post-1603-设计停车系统" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/25/1603-%E8%AE%BE%E8%AE%A1%E5%81%9C%E8%BD%A6%E7%B3%BB%E7%BB%9F/">1603-设计停车系统</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/25/1603-%E8%AE%BE%E8%AE%A1%E5%81%9C%E8%BD%A6%E7%B3%BB%E7%BB%9F/" class="archive-article-date">
-  	<time datetime="2021-03-24T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-25</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
-<p>请你给一个停车场设计一个停车系统。停车场总共有三种不同大小的车位：大，中和小，每种尺寸分别有固定数目的车位。</p>
-<p>请你实现 ParkingSystem 类：</p>
-<p>ParkingSystem(int big, int medium, int small) 初始化 ParkingSystem 类，三个参数分别对应每种停车位的数目。<br>bool addCar(int carType) 检查是否有 carType 对应的停车位。 carType 有三种类型：大，中，小，分别用数字 1， 2 和 3 表示。一辆车只能停在  carType 对应尺寸的停车位中。如果没有空车位，请返回 false ，否则将该车停入车位并返回 true 。</p>
-<p>示例 1：</p>
-<p>输入：<br>[“ParkingSystem”, “addCar”, “addCar”, “addCar”, “addCar”]<br>[[1, 1, 0], [1], [2], [3], [1]]<br>输出：<br>[null, true, true, false, false]</p>
-<p>解释：<br>ParkingSystem parkingSystem = new ParkingSystem(1, 1, 0);<br>parkingSystem.addCar(1); // 返回 true ，因为有 1 个空的大车位<br>parkingSystem.addCar(2); // 返回 true ，因为有 1 个空的中车位<br>parkingSystem.addCar(3); // 返回 false ，因为没有空的小车位<br>parkingSystem.addCar(1); // 返回 false ，因为没有空的大车位，唯一一个大车位已经被占据了</p>
-<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/design-parking-system">https://leetcode-cn.com/problems/design-parking-system</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
-</blockquote>
-<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>​    题目读起来有些拗口，但其实不难。我理解的题目意思是，先初始化车位数，然后后来的输入一辆车，就把这类车对应的 车位减去一，然后输出True 就行了</p>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ParkingSystem</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, big: <span class="built_in">int</span>, medium: <span class="built_in">int</span>, small: <span class="built_in">int</span></span>):</span></span><br><span class="line">        self.big = big</span><br><span class="line">        self.medium = medium</span><br><span class="line">        self.small = small</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">addCar</span>(<span class="params">self, carType: <span class="built_in">int</span></span>) -&gt; bool:</span></span><br><span class="line">        <span class="keyword">if</span> carType == <span class="number">1</span>: </span><br><span class="line">            <span class="keyword">if</span> self.big &gt; <span class="number">0</span>: </span><br><span class="line">                self.big -= <span class="number">1</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">else</span> : <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        <span class="keyword">elif</span> carType == <span class="number">2</span>: </span><br><span class="line">            <span class="keyword">if</span> self.medium&gt; <span class="number">0</span>: </span><br><span class="line">                self.medium -= <span class="number">1</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">else</span> : <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">if</span> self.small&gt;<span class="number">0</span>: </span><br><span class="line">                self.small -= <span class="number">1</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">else</span>: <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><p><strong>init</strong>(): 初始化方法，在类创建的时候会自动调用。</p>
-<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><h5 id="复杂度分析："><a href="#复杂度分析：" class="headerlink" title="复杂度分析："></a>复杂度分析：</h5><ul>
-<li>时间复杂度、空间复杂度都是O（1）</li>
-</ul>
-<p><img src="https://img.imgdb.cn/item/605c75528322e6675cb9386a.jpg" alt="停车系统"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">class</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/25/1603-%E8%AE%BE%E8%AE%A1%E5%81%9C%E8%BD%A6%E7%B3%BB%E7%BB%9F/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-1614-括号的最大嵌套深度" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -982,19 +1002,19 @@
 
 
   
-    <article id="post-1720-解码异或后的数组" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-1603-设计停车系统" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/25/1720-%E8%A7%A3%E7%A0%81%E5%BC%82%E6%88%96%E5%90%8E%E7%9A%84%E6%95%B0%E7%BB%84/">1702-解码异或后的数组</a>
+      <a class="article-title" href="/2021/03/25/1603-%E8%AE%BE%E8%AE%A1%E5%81%9C%E8%BD%A6%E7%B3%BB%E7%BB%9F/">1603-设计停车系统</a>
     </h1>
   
 
         
-        <a href="/2021/03/25/1720-%E8%A7%A3%E7%A0%81%E5%BC%82%E6%88%96%E5%90%8E%E7%9A%84%E6%95%B0%E7%BB%84/" class="archive-article-date">
+        <a href="/2021/03/25/1603-%E8%AE%BE%E8%AE%A1%E5%81%9C%E8%BD%A6%E7%B3%BB%E7%BB%9F/" class="archive-article-date">
   	<time datetime="2021-03-24T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-25</time>
 </a>
         
@@ -1003,31 +1023,24 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
-<p>未知 整数数组 arr 由 n 个非负整数组成。</p>
-<p>经编码后变为长度为 n - 1 的另一个整数数组 encoded ，其中 encoded[i] = arr[i] XOR arr[i + 1] 。例如，arr = [1,0,2,1] 经编码后得到 encoded = [1,2,3] 。</p>
-<p>给你编码后的数组 encoded 和原数组 arr 的第一个元素 first（arr[0]）。</p>
-<p>请解码返回原数组 arr 。可以证明答案存在并且是唯一的。</p>
-<p> </p>
+<p>请你给一个停车场设计一个停车系统。停车场总共有三种不同大小的车位：大，中和小，每种尺寸分别有固定数目的车位。</p>
+<p>请你实现 ParkingSystem 类：</p>
+<p>ParkingSystem(int big, int medium, int small) 初始化 ParkingSystem 类，三个参数分别对应每种停车位的数目。<br>bool addCar(int carType) 检查是否有 carType 对应的停车位。 carType 有三种类型：大，中，小，分别用数字 1， 2 和 3 表示。一辆车只能停在  carType 对应尺寸的停车位中。如果没有空车位，请返回 false ，否则将该车停入车位并返回 true 。</p>
 <p>示例 1：</p>
-<p>输入：encoded = [1,2,3], first = 1<br>输出：[1,0,2,1]<br>解释：若 arr = [1,0,2,1] ，那么 first = 1 且 encoded = [1 XOR 0, 0 XOR 2, 2 XOR 1] = [1,2,3]<br>示例 2：</p>
-<p>输入：encoded = [6,2,7,3], first = 4<br>输出：[4,2,0,7,4]</p>
-<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/decode-xored-array">https://leetcode-cn.com/problems/decode-xored-array</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+<p>输入：<br>[“ParkingSystem”, “addCar”, “addCar”, “addCar”, “addCar”]<br>[[1, 1, 0], [1], [2], [3], [1]]<br>输出：<br>[null, true, true, false, false]</p>
+<p>解释：<br>ParkingSystem parkingSystem = new ParkingSystem(1, 1, 0);<br>parkingSystem.addCar(1); // 返回 true ，因为有 1 个空的大车位<br>parkingSystem.addCar(2); // 返回 true ，因为有 1 个空的中车位<br>parkingSystem.addCar(3); // 返回 false ，因为没有空的小车位<br>parkingSystem.addCar(1); // 返回 false ，因为没有空的大车位，唯一一个大车位已经被占据了</p>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/design-parking-system">https://leetcode-cn.com/problems/design-parking-system</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
 </blockquote>
-<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>​        一开始挺难的，不知道怎么下手，虽然知道这是一个递归问题，但不知道算点在哪。后来突然想起，那是不是异或之间存在一种特殊的关系，比如显而易见的 3^2 是为 1,1^3是为 2，2^1 是为 3 ，是不是所有的异或都存在这种关系？我打开ipython，一试，还真是，那就很简单了</p>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">decode</span>(<span class="params">self, encoded: List[<span class="built_in">int</span>], first: <span class="built_in">int</span></span>) -&gt; List[int]:</span></span><br><span class="line">        arr = []</span><br><span class="line">        arr.insert(<span class="number">0</span>,first)</span><br><span class="line">        lon = <span class="built_in">len</span>(encoded)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(lon): </span><br><span class="line">            arr.append(encoded[i]^arr[i])</span><br><span class="line">        <span class="keyword">return</span> arr</span><br></pre></td></tr></table></figure>
+<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>​    题目读起来有些拗口，但其实不难。我理解的题目意思是，先初始化车位数，然后后来的输入一辆车，就把这类车对应的 车位减去一，然后输出True 就行了</p>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ParkingSystem</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, big: <span class="built_in">int</span>, medium: <span class="built_in">int</span>, small: <span class="built_in">int</span></span>):</span></span><br><span class="line">        self.big = big</span><br><span class="line">        self.medium = medium</span><br><span class="line">        self.small = small</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">addCar</span>(<span class="params">self, carType: <span class="built_in">int</span></span>) -&gt; bool:</span></span><br><span class="line">        <span class="keyword">if</span> carType == <span class="number">1</span>: </span><br><span class="line">            <span class="keyword">if</span> self.big &gt; <span class="number">0</span>: </span><br><span class="line">                self.big -= <span class="number">1</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">else</span> : <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        <span class="keyword">elif</span> carType == <span class="number">2</span>: </span><br><span class="line">            <span class="keyword">if</span> self.medium&gt; <span class="number">0</span>: </span><br><span class="line">                self.medium -= <span class="number">1</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">else</span> : <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">if</span> self.small&gt;<span class="number">0</span>: </span><br><span class="line">                self.small -= <span class="number">1</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">else</span>: <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 
 
-<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><p><code>insert()方法： 在指定位置插入值，常用的参数有两个</code></p>
-<p>insert（index ，key）</p>
-<ul>
-<li>index是插入的位置</li>
-<li>key是插入的值</li>
-</ul>
+<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><p><strong>init</strong>(): 初始化方法，在类创建的时候会自动调用。</p>
 <h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><h5 id="复杂度分析："><a href="#复杂度分析：" class="headerlink" title="复杂度分析："></a>复杂度分析：</h5><ul>
-<li>时间复杂度为n、空间复杂度都是O（1）</li>
+<li>时间复杂度、空间复杂度都是O（1）</li>
 </ul>
-<p><img src="https://img.imgdb.cn/item/605c799c8322e6675cbb8c1e.jpg"></p>
+<p><img src="https://img.imgdb.cn/item/605c75528322e6675cb9386a.jpg" alt="停车系统"></p>
 
       
 
@@ -1041,7 +1054,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">list</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">class</a>
         		</li>
       		
 		</ul>
@@ -1062,7 +1075,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/25/1720-%E8%A7%A3%E7%A0%81%E5%BC%82%E6%88%96%E5%90%8E%E7%9A%84%E6%95%B0%E7%BB%84/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/03/25/1603-%E8%AE%BE%E8%AE%A1%E5%81%9C%E8%BD%A6%E7%B3%BB%E7%BB%9F/">展开全文 >></a>
         </p>
       
 
@@ -1197,7 +1210,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">class</a>
+                <a href="javascript:void(0)" class="js-tag color3">列表</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1205,11 +1218,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">字符串 暴力法</a>
+                <a href="javascript:void(0)" class="js-tag color1">class</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">局域网共享,python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">字符串 暴力法</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1225,7 +1242,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">列表</a>
+                <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">tips,python</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1237,10 +1258,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">面经</a>
               </li>
              
@@ -1249,11 +1266,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">单向链表</a>
+                <a href="javascript:void(0)" class="js-tag color1">最小高度树</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">最小高度树</a>
+                <a href="javascript:void(0)" class="js-tag color5">单向链表</a>
               </li>
             
             <div class="clearfix"></div>
