@@ -294,6 +294,112 @@
 
 
   
+    <article id="post-笔试-网易-括号匹配" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">网易笔试——多种括号匹配</a>
+    </h1>
+  
+
+        
+        <a href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/" class="archive-article-date">
+  	<time datetime="2021-04-18T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
+<p><img src="https://img.imgdb.cn/item/607d13588322e6675ccc6ced.jpg"></p>
+</blockquote>
+<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>​    括号匹配，跟最简单的括号匹配一样的思路，依次遍历放入栈中，如果匹配到相反的括号，就可以直接出栈，否则就持续进栈。</p>
+<p>​    因为有三种括号， 我选择用一个字典来存储左右括号，以左括号为key，右括号为value。</p>
+<p>结构如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dictT = &#123;</span><br><span class="line">    <span class="string">&quot;&#123;&quot;</span>:<span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">    <span class="string">&quot;[&quot;</span>:<span class="string">&quot;]&quot;</span>,</span><br><span class="line">    <span class="string">&quot;(&quot;</span>:<span class="string">&quot;)&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    然后每一次匹配到出栈，就在结果计数器里面里面加上全职。</p>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Match</span>:</span> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span>(<span class="params">self,inString, inStringNum</span>):</span> </span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        inString:输入的字符串</span></span><br><span class="line"><span class="string">        intStringNum： 输入字符串的长度</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> inStringNum % <span class="number">2</span> == <span class="number">1</span>: </span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span> </span><br><span class="line">        <span class="keyword">else</span>: </span><br><span class="line">            dictT = &#123;</span><br><span class="line">                <span class="string">&quot;&#123;&quot;</span>:<span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">                <span class="string">&quot;[&quot;</span>:<span class="string">&quot;]&quot;</span>,</span><br><span class="line">                <span class="string">&quot;(&quot;</span>:<span class="string">&quot;)&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">            stackT = []</span><br><span class="line">            result = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> s <span class="keyword">in</span> inString: </span><br><span class="line">                <span class="comment"># 左括号靠头或右括号结尾，括号必定不匹配</span></span><br><span class="line">                <span class="keyword">if</span> inString[<span class="number">0</span>] <span class="keyword">in</span> dictT.value() <span class="keyword">or</span> inString[-<span class="number">1</span>] <span class="keyword">in</span> dictT.keys():</span><br><span class="line">                    <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">                <span class="comment"># 左括号进栈</span></span><br><span class="line">                <span class="keyword">elif</span>  s <span class="keyword">in</span> dictT.keys(): </span><br><span class="line">                    satck.append(s)</span><br><span class="line">                    <span class="comment"># 右括号出栈</span></span><br><span class="line">                <span class="keyword">else</span>: </span><br><span class="line">                    <span class="keyword">if</span> s = <span class="string">&quot;&#125;&quot;</span>: </span><br><span class="line">                        result += <span class="number">3</span></span><br><span class="line">                    <span class="keyword">elif</span> s = <span class="string">&quot;]&quot;</span>: </span><br><span class="line">                        result += <span class="number">2</span></span><br><span class="line">                    <span class="keyword">else</span>: </span><br><span class="line">                        result += <span class="number">1</span></span><br><span class="line">               		<span class="keyword">if</span> dictT[stackT.pop()] != s: </span><br><span class="line">                        <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">            <span class="comment"># 栈中为空，说明括号匹配</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> StackT: </span><br><span class="line">                <span class="keyword">return</span> result</span><br><span class="line">                </span><br><span class="line">            </span><br><span class="line">        </span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><p>list.pop(index)</p>
+<ul>
+<li>可选参数，默认删除最后 一个元素，即index 默认值为 -1</li>
+</ul>
+<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><h5 id="复杂度分析："><a href="#复杂度分析：" class="headerlink" title="复杂度分析："></a>复杂度分析：</h5><ul>
+<li></li>
+<li>空间复杂度 O（n）</li>
+<li>时间复杂度O（n）</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">括号匹配</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-笔试-网易-日志查找" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -374,112 +480,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%97%A5%E5%BF%97%E6%9F%A5%E6%89%BE/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-笔试-网易-括号匹配" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">网易笔试——多种括号匹配</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/" class="archive-article-date">
-  	<time datetime="2021-04-18T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-19</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
-<p><img src="https://img.imgdb.cn/item/607d13588322e6675ccc6ced.jpg"></p>
-</blockquote>
-<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>​    括号匹配，跟最简单的括号匹配一样的思路，依次遍历放入栈中，如果匹配到相反的括号，就可以直接出栈，否则就持续进栈。</p>
-<p>​    因为有三种括号， 我选择用一个字典来存储左右括号，以左括号为key，右括号为value。</p>
-<p>结构如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dictT = &#123;</span><br><span class="line">    <span class="string">&quot;&#123;&quot;</span>:<span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">    <span class="string">&quot;[&quot;</span>:<span class="string">&quot;]&quot;</span>,</span><br><span class="line">    <span class="string">&quot;(&quot;</span>:<span class="string">&quot;)&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    然后每一次匹配到出栈，就在结果计数器里面里面加上全职。</p>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Match</span>:</span> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span>(<span class="params">self,inString, inStringNum</span>):</span> </span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        inString:输入的字符串</span></span><br><span class="line"><span class="string">        intStringNum： 输入字符串的长度</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> inStringNum % <span class="number">2</span> == <span class="number">1</span>: </span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span> </span><br><span class="line">        <span class="keyword">else</span>: </span><br><span class="line">            dictT = &#123;</span><br><span class="line">                <span class="string">&quot;&#123;&quot;</span>:<span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">                <span class="string">&quot;[&quot;</span>:<span class="string">&quot;]&quot;</span>,</span><br><span class="line">                <span class="string">&quot;(&quot;</span>:<span class="string">&quot;)&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">            stackT = []</span><br><span class="line">            result = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> s <span class="keyword">in</span> inString: </span><br><span class="line">                <span class="comment"># 左括号靠头或右括号结尾，括号必定不匹配</span></span><br><span class="line">                <span class="keyword">if</span> inString[<span class="number">0</span>] <span class="keyword">in</span> dictT.value() <span class="keyword">or</span> inString[-<span class="number">1</span>] <span class="keyword">in</span> dictT.keys():</span><br><span class="line">                    <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">                <span class="comment"># 左括号进栈</span></span><br><span class="line">                <span class="keyword">elif</span>  s <span class="keyword">in</span> dictT.keys(): </span><br><span class="line">                    satck.append(s)</span><br><span class="line">                    <span class="comment"># 右括号出栈</span></span><br><span class="line">                <span class="keyword">else</span>: </span><br><span class="line">                    <span class="keyword">if</span> s = <span class="string">&quot;&#125;&quot;</span>: </span><br><span class="line">                        result += <span class="number">3</span></span><br><span class="line">                    <span class="keyword">elif</span> s = <span class="string">&quot;]&quot;</span>: </span><br><span class="line">                        result += <span class="number">2</span></span><br><span class="line">                    <span class="keyword">else</span>: </span><br><span class="line">                        result += <span class="number">1</span></span><br><span class="line">               		<span class="keyword">if</span> dictT[stackT.pop()] != s: </span><br><span class="line">                        <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">            <span class="comment"># 栈中为空，说明括号匹配</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> StackT: </span><br><span class="line">                <span class="keyword">return</span> result</span><br><span class="line">                </span><br><span class="line">            </span><br><span class="line">        </span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><p>list.pop(index)</p>
-<ul>
-<li>可选参数，默认删除最后 一个元素，即index 默认值为 -1</li>
-</ul>
-<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><h5 id="复杂度分析："><a href="#复杂度分析：" class="headerlink" title="复杂度分析："></a>复杂度分析：</h5><ul>
-<li></li>
-<li>空间复杂度 O（n）</li>
-<li>时间复杂度O（n）</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">括号匹配</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">展开全文 >></a>
         </p>
       
 
@@ -1167,7 +1167,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">列表</a>
+                <a href="javascript:void(0)" class="js-tag color1">class</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1175,15 +1175,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">class</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">字符串 暴力法</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">二进制</a>
+                <a href="javascript:void(0)" class="js-tag color3">局域网共享,python</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1199,7 +1195,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">二维数组</a>
+                <a href="javascript:void(0)" class="js-tag color3">列表</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1207,15 +1203,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">括号匹配</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">最小高度树</a>
+                <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1223,7 +1215,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">二维数组</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">单向链表</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">最小高度树</a>
               </li>
             
             <div class="clearfix"></div>
