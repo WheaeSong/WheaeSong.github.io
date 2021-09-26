@@ -15,15 +15,15 @@
 <meta property="og:site_name" content="Noir">
 <meta property="og:description" content="12写在前面：面试时间为2021-9-14，面试主要涉及下述问题，有些答上来，有些当时没答上来，查阅资料后统一整理。职位为运维开发工程师，总结数据库考察较多，操作系统和网络其次，基本未涉及编码，可能跟面试岗位有关    数据库MYSQL 数据库1.事务数据库事务(Database Transaction)，是指作为单个逻辑工作单元执行的一系列操作，要么完全地执行，要么完全地不执行。彻底理解数据库事">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="file://C:\Users\wy\OneDrive%E7%AE%80%E5%8E%86\media\aeb0a3acff61c1846e3841fa220ce078.png?lastModify=1632662579">
-<meta property="og:image" content="e:/Md_img/e96d246372db5e322d08002fc50437d3.png">
-<meta property="og:image" content="file://C:\Users\wy\OneDrive%E7%AE%80%E5%8E%86\media\d6e0205780c612f555e1b33be920f234.jpg?lastModify=1632662973">
+<meta property="og:image" content="e:/Md_img/615084cb2ab3f51d9182a58f.png">
+<meta property="og:image" content="e:/Md_img/615084e02ab3f51d9182cc09.png">
+<meta property="og:image" content="e:/Md_img/615084f62ab3f51d9182f0da.jpg">
 <meta property="article:published_time" content="2021-09-20T12:52:07.000Z">
-<meta property="article:modified_time" content="2021-09-26T13:52:08.784Z">
+<meta property="article:modified_time" content="2021-09-26T14:34:42.677Z">
 <meta property="article:author" content="Noir">
 <meta property="article:tag" content="面试">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="file://C:\Users\wy\OneDrive%E7%AE%80%E5%8E%86\media\aeb0a3acff61c1846e3841fa220ce078.png?lastModify=1632662579">
+<meta name="twitter:image" content="e:/Md_img/615084cb2ab3f51d9182a58f.png">
   
     <link rel="alternative" href="/atom.xml" title="Noir" type="application/atom+xml">
   
@@ -191,7 +191,7 @@
 <h4 id="2、乐观锁和悲观锁"><a href="#2、乐观锁和悲观锁" class="headerlink" title="2、乐观锁和悲观锁"></a>2、乐观锁和悲观锁</h4><p>悲观锁：假定会发生并发冲突，屏蔽一切可能违反数据完整性的操作</p>
 <p>乐观锁：假设不会发生并发冲突，只在提交操作时检查是否违反数据完整性。</p>
 <p>乐观锁与悲观锁的具体区别: <a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903639207641096/#heading-1">https://juejin.cn/post/6844903639207641096\#heading-1</a></p>
-<h4 id="3、innodb-引擎如何实现MVCC"><a href="#3、innodb-引擎如何实现MVCC" class="headerlink" title="3、innodb 引擎如何实现MVCC"></a>3、innodb 引擎如何实现MVCC</h4><p><img src="file://C:\Users\wy\OneDrive%E7%AE%80%E5%8E%86\media\aeb0a3acff61c1846e3841fa220ce078.png?lastModify=1632662579" alt="图片"></p>
+<h4 id="3、innodb-引擎如何实现MVCC"><a href="#3、innodb-引擎如何实现MVCC" class="headerlink" title="3、innodb 引擎如何实现MVCC"></a>3、innodb 引擎如何实现MVCC</h4><p><img src="E:\Md_img\615084cb2ab3f51d9182a58f.png"></p>
 <p>innodb会为每一行添加两个字段，分别表示该行<strong>创建的版本</strong>和<strong>删除的版本</strong>，填入的是事务的版本号，这个版本号随着事务的创建不断递增。在repeated<br>read的隔离级别（<a target="_blank" rel="noopener" href="http://blog.csdn.net/chosen0ne/article/details/10036775">事务的隔离级别请看这篇文章</a>）下，具体各种数据库操作的实现：</p>
 <ul>
 <li><p>  select：满足以下两个条件innodb会返回该行数据：</p>
@@ -219,7 +219,7 @@
 <h4 id="5-索引的工作原理及其种类"><a href="#5-索引的工作原理及其种类" class="headerlink" title="5.索引的工作原理及其种类"></a>5.索引的工作原理及其种类</h4><p>数据库索引，是数据库管理系统中一个排序的数据结构，以协助快速查询，更新数据库表中数据。索引的实现通常使用B树以其变种B+树。</p>
 <p>在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高级查找算法。这种数据结构，就是索引。</p>
 <p>为表设置索引要付出代价的：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间（因为索引也要随之变动）</p>
-<h4 id="6、隔离"><a href="#6、隔离" class="headerlink" title="6、隔离"></a>6、隔离</h4><p><img src="E:\Md_img\e96d246372db5e322d08002fc50437d3.png" alt="图片"></p>
+<h4 id="6、隔离"><a href="#6、隔离" class="headerlink" title="6、隔离"></a>6、隔离</h4><p><img src="E:\Md_img\615084e02ab3f51d9182cc09.png"></p>
 <p>图片</p>
 <h4 id="7、事务的四大隔离级别实践"><a href="#7、事务的四大隔离级别实践" class="headerlink" title="7、事务的四大隔离级别实践"></a>7、事务的四大隔离级别实践</h4><p>既然并发事务存在<strong>脏读、不可重复、幻读</strong>等问题，InnoDB实现了哪几种事务的隔离级别应对呢？</p>
 <ul>
@@ -241,7 +241,7 @@
 <h4 id="2、Redis集群方案该怎么做-都有哪些方案"><a href="#2、Redis集群方案该怎么做-都有哪些方案" class="headerlink" title="2、Redis集群方案该怎么做?都有哪些方案?"></a>2、Redis集群方案该怎么做?都有哪些方案?</h4><p>1、redis<br>目前用的最多的集群方案，基本和twemproxy一致的效果，但它支持在节点数量改变情况下，旧节点数据客恢复到新hash节点</p>
 <p>2、redis<br>cluster3.0自带的集群，特点在于他的分布式算法不是一致性hash，而是hash槽的概念，以及自身支持节点设置从节点。具体看官方介绍</p>
 <p>3、在业务代码层实现，起几个毫无关联的redis实例，在代码层，对key进行hash计算，然后去对应的redis实例操作数据。这种方式对hash层代码要求比较高，考虑部分包括，节点失效后的替代算法方案，数据震荡后的字典脚本恢复，实例的监控，等等</p>
-<h3 id="3、基本数据类型"><a href="#3、基本数据类型" class="headerlink" title="3、基本数据类型"></a>3、基本数据类型</h3><p><img src="file://C:\Users\wy\OneDrive%E7%AE%80%E5%8E%86\media\d6e0205780c612f555e1b33be920f234.jpg?lastModify=1632662973" alt="img"></p>
+<h3 id="3、基本数据类型"><a href="#3、基本数据类型" class="headerlink" title="3、基本数据类型"></a>3、基本数据类型</h3><p><img src="E:\Md_img\615084f62ab3f51d9182f0da.jpg"></p>
 <h4 id="缓存穿透、击穿、雪崩"><a href="#缓存穿透、击穿、雪崩" class="headerlink" title="缓存穿透、击穿、雪崩"></a>缓存穿透、击穿、雪崩</h4><h5 id="穿透："><a href="#穿透：" class="headerlink" title="穿透："></a>穿透：</h5><p>​    正常情况下，查询数据无论在缓存中或者数据库中，都应该有这样的数据。但如果这个数据在缓存和数据库都<strong>不存在</strong>，那么用户高并发环境下访问<strong>数据库</strong>和<strong>缓存</strong>中都<strong>不存在的数据</strong>称之为缓存穿透现象.</p>
 <h6 id="解决方案："><a href="#解决方案：" class="headerlink" title="解决方案："></a>解决方案：</h6><p>解决方案</p>
 <p>1). 禁用IP 限制IP访问.</p>
@@ -657,15 +657,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Mysql</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">局域网共享,python</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">模拟</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -673,11 +665,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">镜像树</a>
+                <a href="javascript:void(0)" class="js-tag color3">模拟</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">动态规划, 剑指offer</a>
+                <a href="javascript:void(0)" class="js-tag color1">Mysql</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">镜像树</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -689,15 +685,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">二维数组</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">括号匹配</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">面经</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">动态规划, 剑指offer</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">二维数组</a>
               </li>
              
               <li class="article-tag-list-item">
