@@ -159,6 +159,301 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-金证面试" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/09/20/%E9%87%91%E8%AF%81%E9%9D%A2%E8%AF%95/">金证面试 21-9.14</a>
+    </h1>
+  
+
+        
+        <a href="/2021/09/20/%E9%87%91%E8%AF%81%E9%9D%A2%E8%AF%95/" class="archive-article-date">
+  	<time datetime="2021-09-20T12:52:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">写在前面：</span><br><span class="line">面试时间为2021<span class="string">-9</span><span class="string">-14</span>，面试主要涉及下述问题，有些答上来，有些当时没答上来，查阅资料后统一整理。职位为运维开发工程师，总结数据库考察较多，操作系统和网络其次，基本未涉及编码，可能跟面试岗位有关</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><h3 id="MYSQL-数据库"><a href="#MYSQL-数据库" class="headerlink" title="MYSQL 数据库"></a>MYSQL 数据库</h3><h4 id="1-事务"><a href="#1-事务" class="headerlink" title="1.事务"></a>1.事务</h4><p>数据库事务(Database Transaction)<br>，是指作为单个逻辑工作单元执行的一系列操作，要么完全地执行，要么完全地不执行。<br>彻底理解数据库事务: <a target="_blank" rel="noopener" href="http://www.hollischuang.com/archives/898">http://www.hollischuang.com/archives/898</a></p>
+<h4 id="2、乐观锁和悲观锁"><a href="#2、乐观锁和悲观锁" class="headerlink" title="2、乐观锁和悲观锁"></a>2、乐观锁和悲观锁</h4><p>悲观锁：假定会发生并发冲突，屏蔽一切可能违反数据完整性的操作</p>
+<p>乐观锁：假设不会发生并发冲突，只在提交操作时检查是否违反数据完整性。</p>
+<p>乐观锁与悲观锁的具体区别: <a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903639207641096/#heading-1">https://juejin.cn/post/6844903639207641096\#heading-1</a></p>
+<h4 id="3、innodb-引擎如何实现MVCC"><a href="#3、innodb-引擎如何实现MVCC" class="headerlink" title="3、innodb 引擎如何实现MVCC"></a>3、innodb 引擎如何实现MVCC</h4><p><img src="file://C:\Users\wy\OneDrive%E7%AE%80%E5%8E%86\media\aeb0a3acff61c1846e3841fa220ce078.png?lastModify=1632662579" alt="图片"></p>
+<p>innodb会为每一行添加两个字段，分别表示该行<strong>创建的版本</strong>和<strong>删除的版本</strong>，填入的是事务的版本号，这个版本号随着事务的创建不断递增。在repeated<br>read的隔离级别（<a target="_blank" rel="noopener" href="http://blog.csdn.net/chosen0ne/article/details/10036775">事务的隔离级别请看这篇文章</a>）下，具体各种数据库操作的实现：</p>
+<ul>
+<li><p>  select：满足以下两个条件innodb会返回该行数据：</p>
+</li>
+<li><p>  该行的创建版本号小于等于当前版本号，用于保证在select操作之前所有的操作已经执行落地。</p>
+</li>
+<li><p>  该行的删除版本号大于当前版本或者为空。删除版本号大于当前版本意味着有一个并发事务将该行删除了。</p>
+</li>
+<li><p>  insert：将新插入的行的创建版本号设置为当前系统的版本号。</p>
+</li>
+<li><p>  delete：将要删除的行的删除版本号设置为当前系统的版本号。</p>
+</li>
+<li><p>update：不执行原地update，而是转换成insert +<br>  delete。将旧行的删除版本号设置为当前版本号，并将新行insert同时设置创建版本号为当前版本号。</p>
+</li>
+</ul>
+<p>其中，写操作（insert、delete和update）执行时，需要将系统版本号递增。</p>
+<p>由于旧数据并不真正的删除，所以必须对这些数据进行清理，innodb会开启一个后台线程执行清理工作，具体的规则是将删除版本号小于当前系统版本的行删除，这个过程叫做purge。</p>
+<p>通过MVCC很好的实现了事务的隔离性，可以达到repeated<br>read级别，要实现serializable还必须加锁。</p>
+<h4 id="4、引擎类别"><a href="#4、引擎类别" class="headerlink" title="4、引擎类别"></a>4、引擎类别</h4><p>在缺省情况下，MYSQL支持三个引擎：<strong>ISAM、MYISAM和HEAP</strong>。另外两种类型<strong>INNODB</strong>和<strong>BERKLEY</strong>（BDB），也常常可以使用。</p>
+<h5 id="ISAM"><a href="#ISAM" class="headerlink" title="ISAM"></a>ISAM</h5><p>　　ISAM是一个定义明确且历经时间考验的数据表格管理方法，它在设计之时就考虑到数据库被查询的次数要远大于更新的次数。因此，ISAM执行读取操作的速度很快，而且不占用大量的内存和存储资源。ISAM的两个主要<strong>不足之处</strong>在于，它<strong>不支持事务处理</strong>，也<strong>不能够容错</strong>：如果你的硬盘崩溃了，那么数据文件就无法恢复了。如果你正在把ISAM用在关键任务应用程序里，那就必须经常备份你所有的实时数据，通过其复制特性，MYSQL能够支持这样的备份应用程序。</p>
+<h5 id="MYISAM"><a href="#MYISAM" class="headerlink" title="MYISAM"></a>MYISAM</h5><p>　　MYISAM是MYSQL的ISAM扩展格式和<strong>缺省的数据库引擎</strong>。除了<strong>提供</strong>ISAM里所没有的<strong>索引和字段管理的</strong>功能，MYISAM还使用一种<strong>表格锁定的机制</strong>，来<strong>优化多个并发的读写操作</strong>。其代价是你需要经常运行OPTIMIZE<br>TABLE命令，来恢复被更新机制所浪费的空间。MYISAM还有一些有用的扩展，例如用来修复数据库文件的MYISAMCHK工具和用来恢复浪费空间的MYISAMPACK工具。</p>
+<p>　　MYISAM强调了快速读取操作，这可能就是为什么MYSQL受到了WEB开发如此青睐的主要原因：在WEB开发中你所进行的大量数据操作都是读取操作。所以，大多数虚拟主机提供商和INTERNET平台提供商只允许使用MYISAM格式。</p>
+<h5 id="HEAP"><a href="#HEAP" class="headerlink" title="HEAP"></a>HEAP</h5><p>　　HEAP<strong>允许只驻留在内存里的临时表格</strong>。驻留在内存里让HEAP要比ISAM和MYISAM都快，但是它所<strong>管理的数据是不稳定的</strong>，而且如果在关机之前没有进行保存，那么所有的数据都会丢失。在数据行被删除的时候，HEAP也不会浪费大量的空间。HEAP表格在你需要使用SELECT表达式来选择和操控数据的时候非常有用。要记住，在用完表格之后就删除表格。</p>
+<h5 id="INNODB和BERKLEYDB"><a href="#INNODB和BERKLEYDB" class="headerlink" title="INNODB和BERKLEYDB"></a>INNODB和BERKLEYDB</h5><p>　　INNODB和BERKLEYDB（BDB）数据库引擎都是造就MYSQL灵活性的技术的直接产品，这项技术就是MYSQL++<br>API。在使用MYSQL的时候，你所面对的每一个挑战几乎都源于ISAM和MYISAM数据库引擎不支持事务处理也不支持外来键。尽管要比ISAM和MYISAM引擎慢很多，但是INNODB和BDB包括了<strong>对事务处理和外来键的支持</strong>，这两点都是前两个引擎所没有的。如前所述，如果你的设计需要这些特性中的一者或者两者，那你就要被迫使用后两个引擎中的一个了。</p>
+<h4 id="5-索引的工作原理及其种类"><a href="#5-索引的工作原理及其种类" class="headerlink" title="5.索引的工作原理及其种类"></a>5.索引的工作原理及其种类</h4><p>数据库索引，是数据库管理系统中一个排序的数据结构，以协助快速查询，更新数据库表中数据。索引的实现通常使用B树以其变种B+树。</p>
+<p>在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高级查找算法。这种数据结构，就是索引。</p>
+<p>为表设置索引要付出代价的：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间（因为索引也要随之变动）</p>
+<h4 id="6、隔离"><a href="#6、隔离" class="headerlink" title="6、隔离"></a>6、隔离</h4><p><img src="E:\Md_img\e96d246372db5e322d08002fc50437d3.png" alt="图片"></p>
+<p>图片</p>
+<h4 id="7、事务的四大隔离级别实践"><a href="#7、事务的四大隔离级别实践" class="headerlink" title="7、事务的四大隔离级别实践"></a>7、事务的四大隔离级别实践</h4><p>既然并发事务存在<strong>脏读、不可重复、幻读</strong>等问题，InnoDB实现了哪几种事务的隔离级别应对呢？</p>
+<ul>
+<li><p>  读未提交（Read Uncommitted）</p>
+</li>
+<li><p>  读已提交（Read Committed）</p>
+</li>
+<li><p>  可重复读（Repeatable Read）</p>
+</li>
+<li><p>  串行化（Serializable）</p>
+</li>
+</ul>
+<h3 id="Redis-数据库"><a href="#Redis-数据库" class="headerlink" title="Redis 数据库"></a>Redis 数据库</h3><h4 id="1、Redis宕机怎么解决？"><a href="#1、Redis宕机怎么解决？" class="headerlink" title="1、Redis宕机怎么解决？"></a>1、Redis宕机怎么解决？</h4><p>宕机:服务器停止服务</p>
+<p>如果只有一台redis，肯定会造成数据丢失，无法挽救</p>
+<p>多台redis或者是redis集群，宕机则需要分为在主从模式下区分来看：</p>
+<p>slave从redis宕机，配置主从复制的时候才配置从的redis，从的会从主的redis中读取主的redis的操作日志，在redis中从库重新启动后会自动加入到主从架构中，自动完成同步数据;</p>
+<p>如果从数据库实现了持久化，此时千万不要立马重启服务，否则可能会造成数据丢失，正确的操作如下：在slave数据上执行SLAVEOF<br>ON<br>ONE,来断开主从关系并把slave升级为主库，此时重新启动主数据库，执行SLAVEOF，把它设置为从库，连接到主的redis上面做主从复制，自动备份数据。</p>
+<p>以上过程很容易配置错误，可以使用redis提供的哨兵机制来简化上面的操作。简单的方法:redis的哨兵(sentinel)的功能</p>
+<h4 id="2、Redis集群方案该怎么做-都有哪些方案"><a href="#2、Redis集群方案该怎么做-都有哪些方案" class="headerlink" title="2、Redis集群方案该怎么做?都有哪些方案?"></a>2、Redis集群方案该怎么做?都有哪些方案?</h4><p>1、redis<br>目前用的最多的集群方案，基本和twemproxy一致的效果，但它支持在节点数量改变情况下，旧节点数据客恢复到新hash节点</p>
+<p>2、redis<br>cluster3.0自带的集群，特点在于他的分布式算法不是一致性hash，而是hash槽的概念，以及自身支持节点设置从节点。具体看官方介绍</p>
+<p>3、在业务代码层实现，起几个毫无关联的redis实例，在代码层，对key进行hash计算，然后去对应的redis实例操作数据。这种方式对hash层代码要求比较高，考虑部分包括，节点失效后的替代算法方案，数据震荡后的字典脚本恢复，实例的监控，等等</p>
+<h3 id="3、基本数据类型"><a href="#3、基本数据类型" class="headerlink" title="3、基本数据类型"></a>3、基本数据类型</h3><p><img src="file://C:\Users\wy\OneDrive%E7%AE%80%E5%8E%86\media\d6e0205780c612f555e1b33be920f234.jpg?lastModify=1632662973" alt="img"></p>
+<h4 id="缓存穿透、击穿、雪崩"><a href="#缓存穿透、击穿、雪崩" class="headerlink" title="缓存穿透、击穿、雪崩"></a>缓存穿透、击穿、雪崩</h4><h5 id="穿透："><a href="#穿透：" class="headerlink" title="穿透："></a>穿透：</h5><p>​    正常情况下，查询数据无论在缓存中或者数据库中，都应该有这样的数据。但如果这个数据在缓存和数据库都<strong>不存在</strong>，那么用户高并发环境下访问<strong>数据库</strong>和<strong>缓存</strong>中都<strong>不存在的数据</strong>称之为缓存穿透现象.</p>
+<h6 id="解决方案："><a href="#解决方案：" class="headerlink" title="解决方案："></a>解决方案：</h6><p>解决方案</p>
+<p>1). 禁用IP 限制IP访问.</p>
+<p>2). 限流 每秒最多访问3次</p>
+<p>3).<strong>布隆过滤器</strong></p>
+<p>4).<strong>缓存空值</strong>(简单粗暴)</p>
+<h5 id="击穿"><a href="#击穿" class="headerlink" title="击穿"></a>击穿</h5><p>在高并发的环境下，大量请求同时请求同一个key，如果恰巧这个时候key失效了。那么当某个热点数据在缓存中<strong>突然失效</strong>.导致大量的用户直接访问数据库.导致并发压力过高造成异常这个现象被称为<strong>缓存击穿</strong></p>
+<h6 id="后果："><a href="#后果：" class="headerlink" title="后果："></a>后果：</h6><p>造成某个时刻所有访问直接打在数据库上，导致数据库压力剧增</p>
+<h6 id="解决翻案："><a href="#解决翻案：" class="headerlink" title="解决翻案："></a>解决翻案：</h6><ul>
+<li><p>尽可能将热点数据的超时时间 设定的长一点</p>
+</li>
+<li><p>设定多级缓存 超时时间采用随机算法.</p>
+</li>
+</ul>
+<h5 id="雪崩"><a href="#雪崩" class="headerlink" title="雪崩"></a>雪崩</h5><p>在缓存服务器中,由于大量的缓存数据失效,导致用户访问的命中率过低.导致直接访问数据库.例如缓存服务宕机，然后大量请求直接访问数据库，极有导致数据库也宕机.</p>
+<h6 id="后果：-1"><a href="#后果：-1" class="headerlink" title="后果："></a>后果：</h6><p>导致缓存、数据库等一系列服务宕机</p>
+<h6 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h6><p>设定超时时间时,应该采用随机算法</p>
+<h4 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h4><p>对数据的更新采用Copy-on-write技术，可以异步地保存到磁盘上，主要有两种策略，</p>
+<ul>
+<li>根据时间，更新次数的快照（save 300 10 ）</li>
+<li>基于语句追加方式(Append-only file，aof)</li>
+</ul>
+<h2 id="计算机网络"><a href="#计算机网络" class="headerlink" title="计算机网络"></a>计算机网络</h2><h3 id="1、Cookie和Session"><a href="#1、Cookie和Session" class="headerlink" title="1、Cookie和Session"></a>1、Cookie和Session</h3><table>
+<thead>
+<tr>
+<th></th>
+<th>Cookie</th>
+<th>Session</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>储存位置</td>
+<td>客户端</td>
+<td>服务器端</td>
+</tr>
+<tr>
+<td>目的</td>
+<td>跟踪会话，也可以保存用户偏好设置或者保存用户名密码等</td>
+<td>跟踪会话</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>不安全</td>
+<td>安全</td>
+</tr>
+</tbody></table>
+<p>session技术是要使用到cookie的，之所以出现session技术，主要是为了安全。</p>
+<h3 id="2、apache-和-nginx-的区别"><a href="#2、apache-和-nginx-的区别" class="headerlink" title="2、apache 和 nginx 的区别"></a>2、apache 和 nginx 的区别</h3><h5 id="nginx-相对-apache-的优点："><a href="#nginx-相对-apache-的优点：" class="headerlink" title="nginx 相对 apache 的优点："></a>nginx 相对 apache 的优点：</h5><ul>
+<li><p>  轻量级，同样起 web 服务，比 apache 占用更少的内存及资源</p>
+</li>
+<li><p>抗并发，nginx 处理请求是异步非阻塞的，支持更多的并发连接，而 apache<br>  则是阻塞型的，在高并发下 nginx 能保持低资源低消耗高性能</p>
+</li>
+<li><p>  配置简洁</p>
+</li>
+<li><p>  高度模块化的设计，编写模块相对简单</p>
+</li>
+<li><p>  社区活跃</p>
+</li>
+</ul>
+<h5 id="apache-相对-nginx-的优点："><a href="#apache-相对-nginx-的优点：" class="headerlink" title="apache 相对 nginx 的优点："></a>apache 相对 nginx 的优点：</h5><ul>
+<li><p>  rewrite ，比 nginx 的 rewrite 强大</p>
+</li>
+<li><p>  模块超多，基本想到的都可以找到</p>
+</li>
+<li><p>  少 bug ，nginx 的 bug 相对较多</p>
+</li>
+<li><p>  超稳定</p>
+</li>
+</ul>
+<h3 id="3-中间人攻击"><a href="#3-中间人攻击" class="headerlink" title="3.中间人攻击"></a>3.中间人攻击</h3><p>中间人攻击（Man-in-the-middle<br>attack，通常缩写为MITM）是指攻击者与通讯的两端分别创建独立的联系，并交换其所收到的数据，使通讯的两端认为他们正在通过一个私密的连接与对方直接对话，但事实上整个会话都被攻击者完全控制。</p>
+<h3 id="4-简述TCP和UDP的区别以及优缺点"><a href="#4-简述TCP和UDP的区别以及优缺点" class="headerlink" title="4.简述TCP和UDP的区别以及优缺点?"></a>4.简述TCP和UDP的区别以及优缺点?</h3><p><strong>TCP 的优点：</strong></p>
+<p>可靠，稳定。</p>
+<p>TCP 的可靠体现在 TCP 在传递数据之前，会有三次握手来建立连接，而且在数据传递时，有确认、窗口、重传、拥塞控制机制，在数据传完后，还会断开连接用来节约系统资源。</p>
+<p><strong>TCP 的缺点：</strong></p>
+<p>慢，效率低，占用系统资源高，易被攻击。</p>
+<p>TCP 在传递数据之前，要先建连接，这会消耗时间，而且在数据传递时，确认机制、重传机制、拥塞控制机制等都会消耗大量的时间，而且要在每台设备上维护所有的传输连接，事实上，每个连接都会占用系统的 CPU、内存等硬件资源。</p>
+<p>而且，因为 TCP 有确认机制、三次握手机制，这些也导致 TCP 容易被人利用，实现 DOS、DDOS、CC 等攻击。</p>
+<p><strong>UDP 的优点：</strong></p>
+<p>快，比 TCP 稍安全。</p>
+<p>UDP 没有 TCP 的握手、确认、窗口、重传、拥塞控制等机制，UDP 是一个无状态的传输协议，所以它在传递数据时非常快。没有 TCP 的这些机制，UDP 较 TCP 被攻击者利用的漏洞就要少一些。但 UDP 也是无法避免攻击的，比如：UDP Flood 攻击。</p>
+<p><strong>UDP 的缺点：</strong></p>
+<p>不可靠，不稳定。</p>
+<p>因为 UDP 没有 TCP 那些可靠的机制，在数据传递时，如果网络质量不好，就会很容易丢包。</p>
+<p>基于上面的优缺点，那么，TCP 和 UDP 的应用场景都有哪些呢？</p>
+<p><strong>TCP 应用场景：</strong></p>
+<p>当对网络通讯质量有要求的时候，比如：整个数据要准确无误的传递给对方，这往往用于一些要求可靠的应用，比如 HTTP、HTTPS、FTP 等传输文件的协议，POP、SMTP 等邮件传输的协议。</p>
+<p>在日常生活中，常见使用 TCP 协议的应用如下： 浏览器用的 HTTP， FlashFXP 用的 FTP，Outlook 用的 POP、SMTP，Putty 用的 Telnet、SSH，QQ 文件传输。</p>
+<p><strong>UDP 应用场景：</strong></p>
+<p>当对网络通讯质量要求不高的时候，要求网络通讯速度能尽量的快，这时就可以使用 UDP。</p>
+<p>比如，日常生活中，常见使用 UDP 协议的应用如下：QQ 语音，QQ 视频，TFTP 等。有些应用场景对可靠性要求不高会用到 UPD，比如长视频，要求速率。</p>
+<p><strong>TCP 与 UDP 区别总结：</strong></p>
+<p>1、TCP 面向连接（如打电话要先拨号建立连接）; UDP 是无连接的，即发送数据之前不需要建立连接。</p>
+<p>2、TCP 提供可靠的服务。也就是说，通过 TCP 连接传送的数据，无差错，不丢失，不重复，且按序到达；UDP 尽最大努力交付，即不保证可靠交付。</p>
+<p>3、TCP 面向字节流，实际上是 TCP 把数据看成一连串无结构的字节流；UDP 是面向报文的。UDP 没有拥塞控制，因此网络出现拥塞不会使源主机的发送速率降低（对实时应用很有用，如IP电话，实时视频会议等）</p>
+<p>4、每一条 TCP 连接只能是点到点的；UDP支持一对一，一对多，多对一和多对多的交互通信。</p>
+<p>5、TCP 首部开销 20 字节；UDP 的首部开销小，只有 8 个字节。</p>
+<p>6、TCP 的逻辑通信信道是全双工的可靠信道，UDP 则是不可靠信道。</p>
+<h3 id="浏览器访问一个网站的过程（百度为例）？："><a href="#浏览器访问一个网站的过程（百度为例）？：" class="headerlink" title="浏览器访问一个网站的过程（百度为例）？："></a>浏览器访问一个网站的过程（百度为例）？：</h3><ol>
+<li><p> 浏览器获取输入的域名 <a target="_blank" rel="noopener" href="http://www.baidu.com/">www.baidu.com</a></p>
+</li>
+<li><p> 浏览器向DNS请求解析<a target="_blank" rel="noopener" href="http://www.baidu.com的ip地址/">www.baidu.com的IP地址</a></p>
+</li>
+<li><p> 域名系统DNS解析出百度服务器的IP地址</p>
+</li>
+<li><p> 浏览器与该服务器建立TCP连接(默认端口号80)</p>
+</li>
+<li><p> 浏览器发出HTTP请求，请求百度首页</p>
+</li>
+<li><p> 服务器通过HTTP响应把首页文件发送给浏览器</p>
+</li>
+<li><p> TCP连接释放</p>
+</li>
+<li><p> 浏览器将首页文件进行解析，并将Web页显示给用户。</p>
+</li>
+</ol>
+<h2 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h2><h3 id="1、unix进程间通信方式-IPC"><a href="#1、unix进程间通信方式-IPC" class="headerlink" title="1、unix进程间通信方式(IPC)"></a>1、unix进程间通信方式(IPC)</h3><ol>
+<li><p> 管道（Pipe）：管道可用于具有亲缘关系进程间的通信，允许一个进程和另一个与它有共同祖先的进程之间进行通信。</p>
+</li>
+<li><p>命名管道（named<br> pipe）：命名管道克服了管道没有名字的限制，因此，除具有管道所具有的功能外，它还允许无亲缘关系进程间的通信。命名管道在文件系统中有对应的文件名。命名管道通过命令mkfifo或系统调用mkfifo来创建。</p>
+</li>
+<li><p> 信号（Signal）：信号是比较复杂的通信方式，用于通知接受进程有某种事件发生，除了用于进程间通信外，进程还可以发送信号给进程本身；linux除了支持Unix早期信号语义函数sigal外，还支持语义符合Posix.1标准的信号函数sigaction（实际上，该函数是基于BSD的，BSD为了实现可靠信号机制，又能够统一对外接口，用sigaction函数重新实现了signal函数）。</p>
+</li>
+<li><p>消息（Message）队列：消息队列是消息的链接表，包括Posix消息队列system<br> V消息队列。有足够权限的进程可以向队列中添加消息，被赋予读权限的进程则可以读走队列中的消息。消息队列克服了信号承载信息量少，管道只能承载无格式字节流以及缓冲区大小受限等缺</p>
+</li>
+<li><p> 共享内存：使得多个进程可以访问同一块内存空间，是最快的可用IPC形式。是针对其他通信机制运行效率较低而设计的。往往与其它通信机制，如信号量结合使用，来达到进程间的同步及互斥。</p>
+</li>
+<li><p>内存映射（mapped<br> memory）：内存映射允许任何多个进程间通信，每一个使用该机制的进程通过把一个共享的文件映射到自己的进程地址空间来实现它。</p>
+</li>
+<li><p> 信号量（semaphore）：主要作为进程间以及同一进程不同线程之间的同步手段。</p>
+</li>
+<li><p>套接口（Socket）：更为一般的进程间通信机制，可用于不同机器之间的进程间通信。起初是由Unix系统的BSD分支开发出来的，但现在一般可以移植到其它类Unix系统上：Linux和System<br> V的变种都支持套接字。</p>
+</li>
+</ol>
+<h3 id="2、什么是僵尸进程和孤儿进程？怎么避免僵尸进程？"><a href="#2、什么是僵尸进程和孤儿进程？怎么避免僵尸进程？" class="headerlink" title="2、什么是僵尸进程和孤儿进程？怎么避免僵尸进程？"></a>2、什么是僵尸进程和孤儿进程？怎么避免僵尸进程？</h3><ul>
+<li><p>孤儿进程： 父进程退出，子进程还在运行的这些子进程都是孤儿进程，孤儿进程将被 init<br>进程（进程号为1）所收养，并由 init 进程对他们完成状态收集工作。</p>
+</li>
+<li><p>僵尸进程： 进程使用 fork 创建子进程，如果子进程退出，而父进程并没有调用 wait 或<br>waitpid<br>获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中的这些进程是僵尸进程。</p>
+</li>
+</ul>
+<h3 id="3、并行（parallel）和并发（concurrency）"><a href="#3、并行（parallel）和并发（concurrency）" class="headerlink" title="3、并行（parallel）和并发（concurrency）?"></a>3、并行（parallel）和并发（concurrency）?</h3><p>并行： 同一时刻多个任务同时在运行</p>
+<p>并发：不会在同一时刻同时运行，存在交替执行的情况。</p>
+<h3 id="4、说说下面几个概念：同步，异步，阻塞，非阻塞？"><a href="#4、说说下面几个概念：同步，异步，阻塞，非阻塞？" class="headerlink" title="4、说说下面几个概念：同步，异步，阻塞，非阻塞？"></a>4、说说下面几个概念：同步，异步，阻塞，非阻塞？</h3><ul>
+<li><p>同步： 多个任务之间有先后顺序执行，一个执行完下个才能执行。</p>
+</li>
+<li><p>异步：<br>多个任务之间没有先后顺序，可以同时执行，有时候一个任务可能要在必要的时候获取另一个同时执行的任务的结果，这个就叫回调！</p>
+</li>
+<li><p>阻塞： 如果卡住了调用者，调用者不能继续往下执行，就是说调用者阻塞了。</p>
+</li>
+<li><p>非阻塞： 如果不会卡住，可以继续执行，就是说非阻塞的。</p>
+</li>
+</ul>
+<p>同步异步相对于多任务而言，阻塞非阻塞相对于代码执行而言。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">面试</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/09/20/%E9%87%91%E8%AF%81%E9%9D%A2%E8%AF%95/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-剑指offer-42.连续数组的最大和" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -396,112 +691,6 @@
 
 
   
-    <article id="post-笔试-网易-括号匹配" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">网易笔试——多种括号匹配</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/" class="archive-article-date">
-  	<time datetime="2021-04-18T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-19</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
-<p><img src="https://img.imgdb.cn/item/607d13588322e6675ccc6ced.jpg"></p>
-</blockquote>
-<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>​    括号匹配，跟最简单的括号匹配一样的思路，依次遍历放入栈中，如果匹配到相反的括号，就可以直接出栈，否则就持续进栈。</p>
-<p>​    因为有三种括号， 我选择用一个字典来存储左右括号，以左括号为key，右括号为value。</p>
-<p>结构如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dictT = &#123;</span><br><span class="line">    <span class="string">&quot;&#123;&quot;</span>:<span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">    <span class="string">&quot;[&quot;</span>:<span class="string">&quot;]&quot;</span>,</span><br><span class="line">    <span class="string">&quot;(&quot;</span>:<span class="string">&quot;)&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    然后每一次匹配到出栈，就在结果计数器里面里面加上全职。</p>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Match</span>:</span> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span>(<span class="params">self,inString, inStringNum</span>):</span> </span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        inString:输入的字符串</span></span><br><span class="line"><span class="string">        intStringNum： 输入字符串的长度</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> inStringNum % <span class="number">2</span> == <span class="number">1</span>: </span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span> </span><br><span class="line">        <span class="keyword">else</span>: </span><br><span class="line">            dictT = &#123;</span><br><span class="line">                <span class="string">&quot;&#123;&quot;</span>:<span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">                <span class="string">&quot;[&quot;</span>:<span class="string">&quot;]&quot;</span>,</span><br><span class="line">                <span class="string">&quot;(&quot;</span>:<span class="string">&quot;)&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">            stackT = []</span><br><span class="line">            result = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> s <span class="keyword">in</span> inString: </span><br><span class="line">                <span class="comment"># 左括号靠头或右括号结尾，括号必定不匹配</span></span><br><span class="line">                <span class="keyword">if</span> inString[<span class="number">0</span>] <span class="keyword">in</span> dictT.value() <span class="keyword">or</span> inString[-<span class="number">1</span>] <span class="keyword">in</span> dictT.keys():</span><br><span class="line">                    <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">                <span class="comment"># 左括号进栈</span></span><br><span class="line">                <span class="keyword">elif</span>  s <span class="keyword">in</span> dictT.keys(): </span><br><span class="line">                    satck.append(s)</span><br><span class="line">                    <span class="comment"># 右括号出栈</span></span><br><span class="line">                <span class="keyword">else</span>: </span><br><span class="line">                    <span class="keyword">if</span> s = <span class="string">&quot;&#125;&quot;</span>: </span><br><span class="line">                        result += <span class="number">3</span></span><br><span class="line">                    <span class="keyword">elif</span> s = <span class="string">&quot;]&quot;</span>: </span><br><span class="line">                        result += <span class="number">2</span></span><br><span class="line">                    <span class="keyword">else</span>: </span><br><span class="line">                        result += <span class="number">1</span></span><br><span class="line">               		<span class="keyword">if</span> dictT[stackT.pop()] != s: </span><br><span class="line">                        <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">            <span class="comment"># 栈中为空，说明括号匹配</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> StackT: </span><br><span class="line">                <span class="keyword">return</span> result</span><br><span class="line">                </span><br><span class="line">            </span><br><span class="line">        </span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><p>list.pop(index)</p>
-<ul>
-<li>可选参数，默认删除最后 一个元素，即index 默认值为 -1</li>
-</ul>
-<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><h5 id="复杂度分析："><a href="#复杂度分析：" class="headerlink" title="复杂度分析："></a>复杂度分析：</h5><ul>
-<li></li>
-<li>空间复杂度 O（n）</li>
-<li>时间复杂度O（n）</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">括号匹配</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-笔试-网易-日志查找" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -582,6 +771,112 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%97%A5%E5%BF%97%E6%9F%A5%E6%89%BE/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-笔试-网易-括号匹配" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">网易笔试——多种括号匹配</a>
+    </h1>
+  
+
+        
+        <a href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/" class="archive-article-date">
+  	<time datetime="2021-04-18T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
+<p><img src="https://img.imgdb.cn/item/607d13588322e6675ccc6ced.jpg"></p>
+</blockquote>
+<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>​    括号匹配，跟最简单的括号匹配一样的思路，依次遍历放入栈中，如果匹配到相反的括号，就可以直接出栈，否则就持续进栈。</p>
+<p>​    因为有三种括号， 我选择用一个字典来存储左右括号，以左括号为key，右括号为value。</p>
+<p>结构如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dictT = &#123;</span><br><span class="line">    <span class="string">&quot;&#123;&quot;</span>:<span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">    <span class="string">&quot;[&quot;</span>:<span class="string">&quot;]&quot;</span>,</span><br><span class="line">    <span class="string">&quot;(&quot;</span>:<span class="string">&quot;)&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    然后每一次匹配到出栈，就在结果计数器里面里面加上全职。</p>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Match</span>:</span> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span>(<span class="params">self,inString, inStringNum</span>):</span> </span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        inString:输入的字符串</span></span><br><span class="line"><span class="string">        intStringNum： 输入字符串的长度</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> inStringNum % <span class="number">2</span> == <span class="number">1</span>: </span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span> </span><br><span class="line">        <span class="keyword">else</span>: </span><br><span class="line">            dictT = &#123;</span><br><span class="line">                <span class="string">&quot;&#123;&quot;</span>:<span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">                <span class="string">&quot;[&quot;</span>:<span class="string">&quot;]&quot;</span>,</span><br><span class="line">                <span class="string">&quot;(&quot;</span>:<span class="string">&quot;)&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">            stackT = []</span><br><span class="line">            result = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> s <span class="keyword">in</span> inString: </span><br><span class="line">                <span class="comment"># 左括号靠头或右括号结尾，括号必定不匹配</span></span><br><span class="line">                <span class="keyword">if</span> inString[<span class="number">0</span>] <span class="keyword">in</span> dictT.value() <span class="keyword">or</span> inString[-<span class="number">1</span>] <span class="keyword">in</span> dictT.keys():</span><br><span class="line">                    <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">                <span class="comment"># 左括号进栈</span></span><br><span class="line">                <span class="keyword">elif</span>  s <span class="keyword">in</span> dictT.keys(): </span><br><span class="line">                    satck.append(s)</span><br><span class="line">                    <span class="comment"># 右括号出栈</span></span><br><span class="line">                <span class="keyword">else</span>: </span><br><span class="line">                    <span class="keyword">if</span> s = <span class="string">&quot;&#125;&quot;</span>: </span><br><span class="line">                        result += <span class="number">3</span></span><br><span class="line">                    <span class="keyword">elif</span> s = <span class="string">&quot;]&quot;</span>: </span><br><span class="line">                        result += <span class="number">2</span></span><br><span class="line">                    <span class="keyword">else</span>: </span><br><span class="line">                        result += <span class="number">1</span></span><br><span class="line">               		<span class="keyword">if</span> dictT[stackT.pop()] != s: </span><br><span class="line">                        <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">            <span class="comment"># 栈中为空，说明括号匹配</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> StackT: </span><br><span class="line">                <span class="keyword">return</span> result</span><br><span class="line">                </span><br><span class="line">            </span><br><span class="line">        </span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><p>list.pop(index)</p>
+<ul>
+<li>可选参数，默认删除最后 一个元素，即index 默认值为 -1</li>
+</ul>
+<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><h5 id="复杂度分析："><a href="#复杂度分析：" class="headerlink" title="复杂度分析："></a>复杂度分析：</h5><ul>
+<li></li>
+<li>空间复杂度 O（n）</li>
+<li>时间复杂度O（n）</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">括号匹配</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">展开全文 >></a>
         </p>
       
 
@@ -800,106 +1095,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/04/06/657-%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%83%BD%E5%90%A6%E8%BF%94%E5%9B%9E%E5%8E%9F%E7%82%B9/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Offer-55-I 二叉树的深度" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/05/Offer-55-I%20%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%B7%B1%E5%BA%A6/">Offer-27-二叉树的深度</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/05/Offer-55-I%20%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%B7%B1%E5%BA%A6/" class="archive-article-date">
-  	<time datetime="2021-04-04T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
-<p>输入一棵二叉树的根节点，求该树的深度。从根节点到叶节点依次经过的节点（含根、叶节点）形成树的一条路径，最长路径的长度为树的深度。</p>
-<p>例如：</p>
-<p>给定二叉树 [3,9,20,null,null,15,7]，</p>
-<p>   3<br>  / <br> 9  20<br>   /  <br>  15   7<br>返回它的最大深度 3 。</p>
-<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof">https://leetcode-cn.com/problems/er-cha-shu-de-shen-du-lcof</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
-</blockquote>
-<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><ul>
-<li>后续遍历，得到左右子树的最大深度，子树的最大深度 +1 就是所要求的深度</li>
-</ul>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"># class TreeNode:</span></span><br><span class="line"><span class="comment">#     def __init__(self, x):</span></span><br><span class="line"><span class="comment">#         self.val = x</span></span><br><span class="line"><span class="comment">#         self.left = None</span></span><br><span class="line"><span class="comment">#         self.right = None</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">maxDepth</span>(<span class="params">self, root: TreeNode</span>) -&gt; int:</span></span><br><span class="line">        <span class="keyword">if</span> root: </span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">max</span>(self.maxDepth(root.left),self.maxDepth(root.right)) + <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>: </span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><ul>
-<li>终须遍历，时间复杂度</li>
-</ul>
-<p><img src="https://img.imgdb.cn/item/606b145f8322e6675cc94522.jpg"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">镜像树</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/05/Offer-55-I%20%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%B7%B1%E5%BA%A6/">展开全文 >></a>
         </p>
       
 
@@ -1158,7 +1353,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">字符串 暴力法</a>
+                <a href="javascript:void(0)" class="js-tag color1">Mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1170,7 +1365,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Mysql</a>
+                <a href="javascript:void(0)" class="js-tag color3">字符串 暴力法</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1178,7 +1373,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
+                <a href="javascript:void(0)" class="js-tag color4">动态规划, 剑指offer</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1186,15 +1381,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">动态规划, 剑指offer</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">括号匹配</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">面试</a>
+                <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1202,7 +1389,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">括号匹配</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">面经</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">面试</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1367,5 +1562,5 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
 
 </div>
   </div>
-<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"live2d-widget-model-haruto"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>
