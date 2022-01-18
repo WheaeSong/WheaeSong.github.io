@@ -159,6 +159,123 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-1812-判断国际象棋棋盘中一个格子的颜色" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/12/08/1812-%E5%88%A4%E6%96%AD%E5%9B%BD%E9%99%85%E8%B1%A1%E6%A3%8B%E6%A3%8B%E7%9B%98%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%A0%BC%E5%AD%90%E7%9A%84%E9%A2%9C%E8%89%B2/">1812-判断国际象棋棋盘中一个格子的颜色</a>
+    </h1>
+  
+
+        
+        <a href="/2021/12/08/1812-%E5%88%A4%E6%96%AD%E5%9B%BD%E9%99%85%E8%B1%A1%E6%A3%8B%E6%A3%8B%E7%9B%98%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%A0%BC%E5%AD%90%E7%9A%84%E9%A2%9C%E8%89%B2/" class="archive-article-date">
+  	<time datetime="2021-12-07T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1320742848&auto=1&height=66"></iframe>
+
+<h4 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述;"></a>题目描述;</h4><blockquote>
+<p>给你一个坐标 coordinates ，它是一个字符串，表示国际象棋棋盘中一个格子的坐标。下图是国际象棋棋盘示意图。</p>
+<p>如果所给格子的颜色是白色，请你返回 true，如果是黑色，请返回 false 。</p>
+<p>给定坐标一定代表国际象棋棋盘上一个存在的格子。坐标第一个字符是字母，第二个字符是数字。</p>
+<p> <img src="https://gitee.com/wheaesong/pic-go/raw/master/img//202112072026542.png"></p>
+<p>示例 1：</p>
+<p>输入：coordinates = “a1”<br>输出：false<br>解释：如上图棋盘所示，”a1” 坐标的格子是黑色的，所以返回 false 。<br>示例 2：</p>
+<p>输入：coordinates = “h3”<br>输出：true<br>解释：如上图棋盘所示，”h3” 坐标的格子是白色的，所以返回 true 。<br>示例 3：</p>
+<p>输入：coordinates = “c7”<br>输出：false</p>
+<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/determine-color-of-a-chessboard-square">https://leetcode-cn.com/problems/determine-color-of-a-chessboard-square</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
+</blockquote>
+<h4 id="思路分析："><a href="#思路分析：" class="headerlink" title="思路分析："></a>思路分析：</h4><p>​    一种思路是暴力法直接求解，从输入的 两个字符中取出横纵坐标，然后对照零时的横纵 坐标集，得到答案</p>
+<p>思路很简单，实现也很简单</p>
+<h4 id="代码实现："><a href="#代码实现：" class="headerlink" title="代码实现："></a>代码实现：</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">squareIsWhite</span>(<span class="params">self, coordinates: <span class="built_in">str</span></span>) -&gt; bool:</span></span><br><span class="line">        hard = [<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;d&#x27;</span>,<span class="string">&#x27;e&#x27;</span>,<span class="string">&#x27;f&#x27;</span>,<span class="string">&#x27;g&#x27;</span>,<span class="string">&#x27;h&#x27;</span>]</span><br><span class="line">        end = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>]</span><br><span class="line">        lon = <span class="built_in">len</span>(end)</span><br><span class="line">        h = coordinates[<span class="number">0</span>] </span><br><span class="line">        e = coordinates[-<span class="number">1</span>]</span><br><span class="line">        <span class="keyword">return</span>   (hard.index(h) + end.index(<span class="built_in">int</span>(e)))%<span class="number">2</span> == <span class="number">1</span>          </span><br><span class="line">            </span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h4 id="设计知识点："><a href="#设计知识点：" class="headerlink" title="设计知识点："></a>设计知识点：</h4><ul>
+<li><blockquote>
+<p>列表、字符串的[-1]下标会取出最后一个元素</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><p>复杂度分析： </p>
+<ul>
+<li>时间复杂度：O(1)</li>
+<li>空间复杂度 O(n)</li>
+</ul>
+<p><img src="https://img.imgdb.cn/item/606e65c58322e6675cba6d2e.jpg"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">字符串 暴力法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/12/08/1812-%E5%88%A4%E6%96%AD%E5%9B%BD%E9%99%85%E8%B1%A1%E6%A3%8B%E6%A3%8B%E7%9B%98%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%A0%BC%E5%AD%90%E7%9A%84%E9%A2%9C%E8%89%B2/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-金证面试" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -906,123 +1023,6 @@
 
 
   
-    <article id="post-1812-判断国际象棋棋盘中一个格子的颜色" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/08/1812-%E5%88%A4%E6%96%AD%E5%9B%BD%E9%99%85%E8%B1%A1%E6%A3%8B%E6%A3%8B%E7%9B%98%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%A0%BC%E5%AD%90%E7%9A%84%E9%A2%9C%E8%89%B2/">1812-判断国际象棋棋盘中一个格子的颜色</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/08/1812-%E5%88%A4%E6%96%AD%E5%9B%BD%E9%99%85%E8%B1%A1%E6%A3%8B%E6%A3%8B%E7%9B%98%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%A0%BC%E5%AD%90%E7%9A%84%E9%A2%9C%E8%89%B2/" class="archive-article-date">
-  	<time datetime="2021-04-07T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=1320742848&auto=1&height=66"></iframe>
-
-<h4 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述;"></a>题目描述;</h4><blockquote>
-<p>给你一个坐标 coordinates ，它是一个字符串，表示国际象棋棋盘中一个格子的坐标。下图是国际象棋棋盘示意图。</p>
-<p>如果所给格子的颜色是白色，请你返回 true，如果是黑色，请返回 false 。</p>
-<p>给定坐标一定代表国际象棋棋盘上一个存在的格子。坐标第一个字符是字母，第二个字符是数字。</p>
-<p> <img src="https://gitee.com/wheaesong/pic-go/raw/master/img//202112072026542.png"></p>
-<p>示例 1：</p>
-<p>输入：coordinates = “a1”<br>输出：false<br>解释：如上图棋盘所示，”a1” 坐标的格子是黑色的，所以返回 false 。<br>示例 2：</p>
-<p>输入：coordinates = “h3”<br>输出：true<br>解释：如上图棋盘所示，”h3” 坐标的格子是白色的，所以返回 true 。<br>示例 3：</p>
-<p>输入：coordinates = “c7”<br>输出：false</p>
-<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/determine-color-of-a-chessboard-square">https://leetcode-cn.com/problems/determine-color-of-a-chessboard-square</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
-</blockquote>
-<h4 id="思路分析："><a href="#思路分析：" class="headerlink" title="思路分析："></a>思路分析：</h4><p>​    一种思路是暴力法直接求解，从输入的 两个字符中取出横纵坐标，然后对照零时的横纵 坐标集，得到答案</p>
-<p>思路很简单，实现也很简单</p>
-<h4 id="代码实现："><a href="#代码实现：" class="headerlink" title="代码实现："></a>代码实现：</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">squareIsWhite</span>(<span class="params">self, coordinates: <span class="built_in">str</span></span>) -&gt; bool:</span></span><br><span class="line">        hard = [<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>,<span class="string">&#x27;d&#x27;</span>,<span class="string">&#x27;e&#x27;</span>,<span class="string">&#x27;f&#x27;</span>,<span class="string">&#x27;g&#x27;</span>,<span class="string">&#x27;h&#x27;</span>]</span><br><span class="line">        end = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>]</span><br><span class="line">        lon = <span class="built_in">len</span>(end)</span><br><span class="line">        h = coordinates[<span class="number">0</span>] </span><br><span class="line">        e = coordinates[-<span class="number">1</span>]</span><br><span class="line">        <span class="keyword">return</span>   (hard.index(h) + end.index(<span class="built_in">int</span>(e)))%<span class="number">2</span> == <span class="number">1</span>          </span><br><span class="line">            </span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h4 id="设计知识点："><a href="#设计知识点：" class="headerlink" title="设计知识点："></a>设计知识点：</h4><ul>
-<li><blockquote>
-<p>列表、字符串的[-1]下标会取出最后一个元素</p>
-</blockquote>
-</li>
-</ul>
-<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><p>复杂度分析： </p>
-<ul>
-<li>时间复杂度：O(1)</li>
-<li>空间复杂度 O(n)</li>
-</ul>
-<p><img src="https://img.imgdb.cn/item/606e65c58322e6675cba6d2e.jpg"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">字符串 暴力法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/08/1812-%E5%88%A4%E6%96%AD%E5%9B%BD%E9%99%85%E8%B1%A1%E6%A3%8B%E6%A3%8B%E7%9B%98%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%A0%BC%E5%AD%90%E7%9A%84%E9%A2%9C%E8%89%B2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-657-机器人能否返回原点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1359,15 +1359,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">镜像树</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">tips,python</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
+                <a href="javascript:void(0)" class="js-tag color4">镜像树</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1375,7 +1371,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">二维数组</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">括号匹配</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1383,19 +1387,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">最小高度树</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">面试</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">单向链表</a>
+                <a href="javascript:void(0)" class="js-tag color1">最小高度树</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">括号匹配</a>
+                <a href="javascript:void(0)" class="js-tag color5">单向链表</a>
               </li>
             
             <div class="clearfix"></div>
