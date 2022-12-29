@@ -159,19 +159,121 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-1812-判断国际象棋棋盘中一个格子的颜色" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-从 0 到 1 搭建高性能代理池（一）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/12/08/1812-%E5%88%A4%E6%96%AD%E5%9B%BD%E9%99%85%E8%B1%A1%E6%A3%8B%E6%A3%8B%E7%9B%98%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%A0%BC%E5%AD%90%E7%9A%84%E9%A2%9C%E8%89%B2/">1812-判断国际象棋棋盘中一个格子的颜色</a>
+      <a class="article-title" href="/2022/12/29/%E4%BB%8E%200%20%E5%88%B0%201%20%E6%90%AD%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%88%E4%B8%80%EF%BC%89/">从 0 到 1 搭建高性能代理池（一）</a>
     </h1>
   
 
         
-        <a href="/2021/12/08/1812-%E5%88%A4%E6%96%AD%E5%9B%BD%E9%99%85%E8%B1%A1%E6%A3%8B%E6%A3%8B%E7%9B%98%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%A0%BC%E5%AD%90%E7%9A%84%E9%A2%9C%E8%89%B2/" class="archive-article-date">
+        <a href="/2022/12/29/%E4%BB%8E%200%20%E5%88%B0%201%20%E6%90%AD%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%88%E4%B8%80%EF%BC%89/" class="archive-article-date">
+  	<time datetime="2022-12-28T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-12-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>1、架构</p>
+<p>​    其实代理池的架构说来说去也就那么几件事，可用性，稳定性。而稳定的代理源有很多渠道，包括付费等很多手段。也是第一次搭建，代理源的事情就不细说，主要讲一讲代理评分的标准。</p>
+<p>在开始开发之前，到 github 上学习了很多优秀的开源代理软件，比如崔老师的 proxyPool，这个是很经典的源码了，在自己动手之前也一直用崔老师的开源，但可能是用的人并不少，个人感觉代理的质量并不高，至少就免费的来说，质量是不高的，响应比较慢，也会存在大量的无效 IP 。</p>
+<p>一个代理池无非就几个东西，</p>
+<ul>
+<li>检测器，检测 IP 可用性的组件，我看了很多，大部分是通过 requests.get() 实现的检测的，衡量之后我并没有选择这个，因为 requests 是同步的，也就是说每个请求从打开到关闭，必须完全等到超时或者请求响应才结束，所以我觉得可能在检测效率上会有影响。</li>
+<li>调度器，从已经清洗好的代理池选择可用的代理，同时也就包括代理评分逻辑的构建，包括加分、扣分、删除代理等等。</li>
+<li>存储器，代理存储的地方，我这里选择的是 redis ，介于 redis 高效的相应。</li>
+</ul>
+<p>具体细节大致如下： </p>
+<p><img src="https://img-wangyu.oss-accelerate.aliyuncs.com/img/image-20221229110036903.png" alt="image-20221229110036903"></p>
+<p>抓取器并不单独运行，而是通过调度器调度。当调取器轮询时，发现池中代理数量小于阀值时候，就会启动抓取器，抓取器抓取代理，直接送入检测器，检测通过会进行入库。</p>
+<p>如果是代理池中代理数量并不低于阀值，并不会取获取新的代理，而是对池中的代理进行评分刷新。在池中采用 redis 的 Zset 类型，键值分别为代理和分数。这既保证的代理的唯一性（不用另外构建去重逻辑），方便对代理的可用性进行量化。</p>
+<p>这里的评分量化的逻辑比较简单，在入库时赋初始值为10，检测通过加一分，检测不通过减一分，低于0分删除，最高分为100，但这是可以控制的，如果对代理的稳定性需求比较高，可以适当调高这个最大值。</p>
+<p>这里就贴一下 出入池的核心代码，代码比较简单，注释也写得比较清晰了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="comment"># @Time    : 2022/12/14 10:46</span></span><br><span class="line"><span class="comment"># @Author  : Noir</span></span><br><span class="line"><span class="comment"># @FileName: redisCon.py</span></span><br><span class="line"><span class="comment"># @Software: PyCharm</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># redis 连接池</span></span><br><span class="line"><span class="keyword">import</span> redis</span><br><span class="line"><span class="keyword">from</span> setting <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">PoolEmptyError = redis.exceptions.ConnectionError</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RedisClient</span>(<span class="params"><span class="built_in">object</span></span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        初始化</span></span><br><span class="line"><span class="string">        :param host: 地址</span></span><br><span class="line"><span class="string">        :param port: 端口</span></span><br><span class="line"><span class="string">        :param password: 密码</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        self.redispool = redis.ConnectionPool(host=host, port=port, password=password, decode_responses=<span class="literal">True</span>)</span><br><span class="line">        self.db = redis.Redis(connection_pool=self.redispool)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">add</span>(<span class="params">self, proxy, score=INITIAL_SCORE</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        添加代理，设置分数为最高</span></span><br><span class="line"><span class="string">        :param proxy: 代理</span></span><br><span class="line"><span class="string">        :param score: 分数</span></span><br><span class="line"><span class="string">        :return: 添加结果</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> self.db.zscore(REDIS_KEY, proxy):</span><br><span class="line">            <span class="keyword">return</span> self.db.zadd(REDIS_KEY, &#123;proxy: score&#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 清空代理池</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">flush</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        清空代理池</span></span><br><span class="line"><span class="string">        :return: 清空结果</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> self.db.delete(REDIS_KEY)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 代理分数增加</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">increase</span>(<span class="params">self, proxy</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        代理分数增加</span></span><br><span class="line"><span class="string">        :param proxy: 代理</span></span><br><span class="line"><span class="string">        :return: 增加后的分数</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        score = self.db.zscore(REDIS_KEY, proxy)</span><br><span class="line">        <span class="keyword">if</span> score <span class="keyword">and</span> score &lt; MAX_SCORE:</span><br><span class="line">            print(<span class="string">&#x27;代理&#x27;</span>, proxy, <span class="string">&#x27;当前分数&#x27;</span>, score, <span class="string">&#x27;加1&#x27;</span>)</span><br><span class="line">            <span class="keyword">return</span> self.db.zincrby(REDIS_KEY, <span class="number">1</span>, proxy)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print(<span class="string">&#x27;代理&#x27;</span>, proxy, <span class="string">&#x27;当前分数&#x27;</span>, score, <span class="string">&#x27;已达最大值&#x27;</span>)</span><br><span class="line">            <span class="keyword">return</span> self.db.zadd(REDIS_KEY, &#123;proxy: MAX_SCORE&#125;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">random</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        随机获取有效代理，首先尝试获取最高分的一个代理，如果不存在，则按照排名获取一个，否则异常</span></span><br><span class="line"><span class="string">        :return: 随机代理</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        result = self.db.zrangebyscore(REDIS_KEY, MAX_SCORE, MAX_SCORE)</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(result):</span><br><span class="line">            <span class="keyword">return</span> result</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            result = self.db.zrevrange(REDIS_KEY, <span class="number">0</span>, <span class="number">100</span>)</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">len</span>(result):</span><br><span class="line">                <span class="keyword">return</span> result[<span class="number">0</span>]</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">raise</span> PoolEmptyError</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">decrease</span>(<span class="params">self, proxy</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        代理值减一分，小于最小值，则代理删除</span></span><br><span class="line"><span class="string">        :param proxy: 代理</span></span><br><span class="line"><span class="string">        :return: 修改后的代理分数</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        score = self.db.zscore(REDIS_KEY, proxy)</span><br><span class="line">        <span class="keyword">if</span> score <span class="keyword">and</span> score &gt; MIN_SCORE:</span><br><span class="line">            print(<span class="string">&#x27;代理&#x27;</span>, proxy, <span class="string">&#x27;当前分数&#x27;</span>, score, <span class="string">&#x27;减1&#x27;</span>)</span><br><span class="line">            <span class="keyword">return</span> self.db.zincrby(REDIS_KEY, -<span class="number">1</span>, proxy)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print(<span class="string">&#x27;代理&#x27;</span>, proxy, <span class="string">&#x27;当前分数&#x27;</span>, score, <span class="string">&#x27;移除&#x27;</span>)</span><br><span class="line">            <span class="keyword">return</span> self.db.zrem(REDIS_KEY, proxy)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">exists</span>(<span class="params">self, proxy</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        判断是否存在</span></span><br><span class="line"><span class="string">        :param proxy: 代理</span></span><br><span class="line"><span class="string">        :return: 是否存在</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">not</span> self.db.zscore(REDIS_KEY, proxy) == <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">max</span>(<span class="params">self, proxy</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        将代理设置为 MAX_SCORE</span></span><br><span class="line"><span class="string">        :param</span></span><br><span class="line"><span class="string">        :return: 设置结果</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        print(<span class="string">&#x27;代理&#x27;</span>, proxy, <span class="string">&#x27;可用，设置为&#x27;</span>, MAX_SCORE)</span><br><span class="line">        <span class="keyword">return</span> self.db.zadd(REDIS_KEY, &#123;proxy: MAX_SCORE&#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 获取代理数量</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">count</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        获取数量</span></span><br><span class="line"><span class="string">        :return: 数量</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> self.db.zcard(REDIS_KEY)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 获取全部代理</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">all</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        获取全部代理</span></span><br><span class="line"><span class="string">        :return: 全部代理列表</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> self.db.zrangebyscore(REDIS_KEY, MIN_SCORE, MAX_SCORE)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个中几乎所有的方法都是对 redis.redis()对象的方法的封装，但确实是仅仅对redis已有方法的封装就几乎满足可我们的全部要求，这也是选择 redis 而非Mysql 的重要原因。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">代理池, python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/12/29/%E4%BB%8E%200%20%E5%88%B0%201%20%E6%90%AD%E5%BB%BA%E9%AB%98%E6%80%A7%E8%83%BD%E4%BB%A3%E7%90%86%E6%B1%A0%EF%BC%88%E4%B8%80%EF%BC%89/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-assets/1812-判断国际象棋棋盘中一个格子的颜色" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/12/08/assets/1812-%E5%88%A4%E6%96%AD%E5%9B%BD%E9%99%85%E8%B1%A1%E6%A3%8B%E6%A3%8B%E7%9B%98%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%A0%BC%E5%AD%90%E7%9A%84%E9%A2%9C%E8%89%B2/">1812-判断国际象棋棋盘中一个格子的颜色</a>
+    </h1>
+  
+
+        
+        <a href="/2021/12/08/assets/1812-%E5%88%A4%E6%96%AD%E5%9B%BD%E9%99%85%E8%B1%A1%E6%A3%8B%E6%A3%8B%E7%9B%98%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%A0%BC%E5%AD%90%E7%9A%84%E9%A2%9C%E8%89%B2/" class="archive-article-date">
   	<time datetime="2021-12-07T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-12-08</time>
 </a>
         
@@ -246,7 +348,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/12/08/1812-%E5%88%A4%E6%96%AD%E5%9B%BD%E9%99%85%E8%B1%A1%E6%A3%8B%E6%A3%8B%E7%9B%98%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%A0%BC%E5%AD%90%E7%9A%84%E9%A2%9C%E8%89%B2/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/12/08/assets/1812-%E5%88%A4%E6%96%AD%E5%9B%BD%E9%99%85%E8%B1%A1%E6%A3%8B%E6%A3%8B%E7%9B%98%E4%B8%AD%E4%B8%80%E4%B8%AA%E6%A0%BC%E5%AD%90%E7%9A%84%E9%A2%9C%E8%89%B2/">展开全文 >></a>
         </p>
       
 
@@ -571,19 +673,19 @@
 
 
   
-    <article id="post-剑指offer-42.连续数组的最大和" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-assets/剑指offer-42.连续数组的最大和" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/20/%E5%89%91%E6%8C%87offer-42.%E8%BF%9E%E7%BB%AD%E6%95%B0%E7%BB%84%E7%9A%84%E6%9C%80%E5%A4%A7%E5%92%8C/">剑指offer-42.连续数组的最大和</a>
+      <a class="article-title" href="/2021/04/20/assets/%E5%89%91%E6%8C%87offer-42.%E8%BF%9E%E7%BB%AD%E6%95%B0%E7%BB%84%E7%9A%84%E6%9C%80%E5%A4%A7%E5%92%8C/">剑指offer-42.连续数组的最大和</a>
     </h1>
   
 
         
-        <a href="/2021/04/20/%E5%89%91%E6%8C%87offer-42.%E8%BF%9E%E7%BB%AD%E6%95%B0%E7%BB%84%E7%9A%84%E6%9C%80%E5%A4%A7%E5%92%8C/" class="archive-article-date">
+        <a href="/2021/04/20/assets/%E5%89%91%E6%8C%87offer-42.%E8%BF%9E%E7%BB%AD%E6%95%B0%E7%BB%84%E7%9A%84%E6%9C%80%E5%A4%A7%E5%92%8C/" class="archive-article-date">
   	<time datetime="2021-04-19T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-20</time>
 </a>
         
@@ -676,7 +778,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/20/%E5%89%91%E6%8C%87offer-42.%E8%BF%9E%E7%BB%AD%E6%95%B0%E7%BB%84%E7%9A%84%E6%9C%80%E5%A4%A7%E5%92%8C/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/04/20/assets/%E5%89%91%E6%8C%87offer-42.%E8%BF%9E%E7%BB%AD%E6%95%B0%E7%BB%84%E7%9A%84%E6%9C%80%E5%A4%A7%E5%92%8C/">展开全文 >></a>
         </p>
       
 
@@ -808,125 +910,19 @@
 
 
   
-    <article id="post-笔试-网易-括号匹配" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-assets/笔试-网易-日志查找" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">网易笔试——多种括号匹配</a>
+      <a class="article-title" href="/2021/04/19/assets/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%97%A5%E5%BF%97%E6%9F%A5%E6%89%BE/">网易笔试——日志搜索问题</a>
     </h1>
   
 
         
-        <a href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/" class="archive-article-date">
-  	<time datetime="2021-04-18T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-19</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
-<p><img src="https://img.imgdb.cn/item/607d13588322e6675ccc6ced.jpg"></p>
-</blockquote>
-<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>​    括号匹配，跟最简单的括号匹配一样的思路，依次遍历放入栈中，如果匹配到相反的括号，就可以直接出栈，否则就持续进栈。</p>
-<p>​    因为有三种括号， 我选择用一个字典来存储左右括号，以左括号为key，右括号为value。</p>
-<p>结构如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dictT = &#123;</span><br><span class="line">    <span class="string">&quot;&#123;&quot;</span>:<span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">    <span class="string">&quot;[&quot;</span>:<span class="string">&quot;]&quot;</span>,</span><br><span class="line">    <span class="string">&quot;(&quot;</span>:<span class="string">&quot;)&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>​    然后每一次匹配到出栈，就在结果计数器里面里面加上全职。</p>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Match</span>:</span> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span>(<span class="params">self,inString, inStringNum</span>):</span> </span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        inString:输入的字符串</span></span><br><span class="line"><span class="string">        intStringNum： 输入字符串的长度</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> inStringNum % <span class="number">2</span> == <span class="number">1</span>: </span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span> </span><br><span class="line">        <span class="keyword">else</span>: </span><br><span class="line">            dictT = &#123;</span><br><span class="line">                <span class="string">&quot;&#123;&quot;</span>:<span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">                <span class="string">&quot;[&quot;</span>:<span class="string">&quot;]&quot;</span>,</span><br><span class="line">                <span class="string">&quot;(&quot;</span>:<span class="string">&quot;)&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">            stackT = []</span><br><span class="line">            result = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> s <span class="keyword">in</span> inString: </span><br><span class="line">                <span class="comment"># 左括号靠头或右括号结尾，括号必定不匹配</span></span><br><span class="line">                <span class="keyword">if</span> inString[<span class="number">0</span>] <span class="keyword">in</span> dictT.value() <span class="keyword">or</span> inString[-<span class="number">1</span>] <span class="keyword">in</span> dictT.keys():</span><br><span class="line">                    <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">                <span class="comment"># 左括号进栈</span></span><br><span class="line">                <span class="keyword">elif</span>  s <span class="keyword">in</span> dictT.keys(): </span><br><span class="line">                    satck.append(s)</span><br><span class="line">                    <span class="comment"># 右括号出栈</span></span><br><span class="line">                <span class="keyword">else</span>: </span><br><span class="line">                    <span class="keyword">if</span> s = <span class="string">&quot;&#125;&quot;</span>: </span><br><span class="line">                        result += <span class="number">3</span></span><br><span class="line">                    <span class="keyword">elif</span> s = <span class="string">&quot;]&quot;</span>: </span><br><span class="line">                        result += <span class="number">2</span></span><br><span class="line">                    <span class="keyword">else</span>: </span><br><span class="line">                        result += <span class="number">1</span></span><br><span class="line">               		<span class="keyword">if</span> dictT[stackT.pop()] != s: </span><br><span class="line">                        <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">            <span class="comment"># 栈中为空，说明括号匹配</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> StackT: </span><br><span class="line">                <span class="keyword">return</span> result</span><br><span class="line">                </span><br><span class="line">            </span><br><span class="line">        </span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><p>list.pop(index)</p>
-<ul>
-<li>可选参数，默认删除最后 一个元素，即index 默认值为 -1</li>
-</ul>
-<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><h5 id="复杂度分析："><a href="#复杂度分析：" class="headerlink" title="复杂度分析："></a>复杂度分析：</h5><ul>
-<li></li>
-<li>空间复杂度 O（n）</li>
-<li>时间复杂度O（n）</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">括号匹配</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-笔试-网易-日志查找" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%97%A5%E5%BF%97%E6%9F%A5%E6%89%BE/">网易笔试——日志搜索问题</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%97%A5%E5%BF%97%E6%9F%A5%E6%89%BE/" class="archive-article-date">
+        <a href="/2021/04/19/assets/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%97%A5%E5%BF%97%E6%9F%A5%E6%89%BE/" class="archive-article-date">
   	<time datetime="2021-04-18T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-19</time>
 </a>
         
@@ -993,7 +989,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/19/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%97%A5%E5%BF%97%E6%9F%A5%E6%89%BE/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/04/19/assets/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%97%A5%E5%BF%97%E6%9F%A5%E6%89%BE/">展开全文 >></a>
         </p>
       
 
@@ -1023,19 +1019,125 @@
 
 
   
-    <article id="post-657-机器人能否返回原点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-assets/笔试-网易-括号匹配" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/06/657-%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%83%BD%E5%90%A6%E8%BF%94%E5%9B%9E%E5%8E%9F%E7%82%B9/">657-机器人能否返回原点</a>
+      <a class="article-title" href="/2021/04/19/assets/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">网易笔试——多种括号匹配</a>
     </h1>
   
 
         
-        <a href="/2021/04/06/657-%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%83%BD%E5%90%A6%E8%BF%94%E5%9B%9E%E5%8E%9F%E7%82%B9/" class="archive-article-date">
+        <a href="/2021/04/19/assets/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/" class="archive-article-date">
+  	<time datetime="2021-04-18T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
+<p><img src="https://img.imgdb.cn/item/607d13588322e6675ccc6ced.jpg"></p>
+</blockquote>
+<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>​    括号匹配，跟最简单的括号匹配一样的思路，依次遍历放入栈中，如果匹配到相反的括号，就可以直接出栈，否则就持续进栈。</p>
+<p>​    因为有三种括号， 我选择用一个字典来存储左右括号，以左括号为key，右括号为value。</p>
+<p>结构如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dictT = &#123;</span><br><span class="line">    <span class="string">&quot;&#123;&quot;</span>:<span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">    <span class="string">&quot;[&quot;</span>:<span class="string">&quot;]&quot;</span>,</span><br><span class="line">    <span class="string">&quot;(&quot;</span>:<span class="string">&quot;)&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    然后每一次匹配到出栈，就在结果计数器里面里面加上全职。</p>
+<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Match</span>:</span> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span>(<span class="params">self,inString, inStringNum</span>):</span> </span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        inString:输入的字符串</span></span><br><span class="line"><span class="string">        intStringNum： 输入字符串的长度</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> inStringNum % <span class="number">2</span> == <span class="number">1</span>: </span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span> </span><br><span class="line">        <span class="keyword">else</span>: </span><br><span class="line">            dictT = &#123;</span><br><span class="line">                <span class="string">&quot;&#123;&quot;</span>:<span class="string">&quot;&#125;&quot;</span>,</span><br><span class="line">                <span class="string">&quot;[&quot;</span>:<span class="string">&quot;]&quot;</span>,</span><br><span class="line">                <span class="string">&quot;(&quot;</span>:<span class="string">&quot;)&quot;</span></span><br><span class="line">                    &#125;</span><br><span class="line">            stackT = []</span><br><span class="line">            result = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> s <span class="keyword">in</span> inString: </span><br><span class="line">                <span class="comment"># 左括号靠头或右括号结尾，括号必定不匹配</span></span><br><span class="line">                <span class="keyword">if</span> inString[<span class="number">0</span>] <span class="keyword">in</span> dictT.value() <span class="keyword">or</span> inString[-<span class="number">1</span>] <span class="keyword">in</span> dictT.keys():</span><br><span class="line">                    <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">                <span class="comment"># 左括号进栈</span></span><br><span class="line">                <span class="keyword">elif</span>  s <span class="keyword">in</span> dictT.keys(): </span><br><span class="line">                    satck.append(s)</span><br><span class="line">                    <span class="comment"># 右括号出栈</span></span><br><span class="line">                <span class="keyword">else</span>: </span><br><span class="line">                    <span class="keyword">if</span> s = <span class="string">&quot;&#125;&quot;</span>: </span><br><span class="line">                        result += <span class="number">3</span></span><br><span class="line">                    <span class="keyword">elif</span> s = <span class="string">&quot;]&quot;</span>: </span><br><span class="line">                        result += <span class="number">2</span></span><br><span class="line">                    <span class="keyword">else</span>: </span><br><span class="line">                        result += <span class="number">1</span></span><br><span class="line">               		<span class="keyword">if</span> dictT[stackT.pop()] != s: </span><br><span class="line">                        <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line">            <span class="comment"># 栈中为空，说明括号匹配</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> StackT: </span><br><span class="line">                <span class="keyword">return</span> result</span><br><span class="line">                </span><br><span class="line">            </span><br><span class="line">        </span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><p>list.pop(index)</p>
+<ul>
+<li>可选参数，默认删除最后 一个元素，即index 默认值为 -1</li>
+</ul>
+<h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><h5 id="复杂度分析："><a href="#复杂度分析：" class="headerlink" title="复杂度分析："></a>复杂度分析：</h5><ul>
+<li></li>
+<li>空间复杂度 O（n）</li>
+<li>时间复杂度O（n）</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">括号匹配</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/04/19/assets/%E7%AC%94%E8%AF%95-%E7%BD%91%E6%98%93-%E6%8B%AC%E5%8F%B7%E5%8C%B9%E9%85%8D/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-assets/657-机器人能否返回原点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/06/assets/657-%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%83%BD%E5%90%A6%E8%BF%94%E5%9B%9E%E5%8E%9F%E7%82%B9/">657-机器人能否返回原点</a>
+    </h1>
+  
+
+        
+        <a href="/2021/04/06/assets/657-%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%83%BD%E5%90%A6%E8%BF%94%E5%9B%9E%E5%8E%9F%E7%82%B9/" class="archive-article-date">
   	<time datetime="2021-04-05T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-06</time>
 </a>
         
@@ -1096,119 +1198,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/06/657-%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%83%BD%E5%90%A6%E8%BF%94%E5%9B%9E%E5%8E%9F%E7%82%B9/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-offer-27-二叉树镜像" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/04/05/offer-27-%E4%BA%8C%E5%8F%89%E6%A0%91%E9%95%9C%E5%83%8F/">Offer-27-二叉树的镜像</a>
-    </h1>
-  
-
-        
-        <a href="/2021/04/05/offer-27-%E4%BA%8C%E5%8F%89%E6%A0%91%E9%95%9C%E5%83%8F/" class="archive-article-date">
-  	<time datetime="2021-04-04T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-04-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="题目描述："><a href="#题目描述：" class="headerlink" title="题目描述："></a>题目描述：</h4><blockquote>
-<p>请完成一个函数，输入一个二叉树，该函数输出它的镜像。</p>
-<p>例如输入：</p>
-<p>​     4</p>
-<p>  /   <br> 2     7<br>/ \   / <br>1   3 6   9<br>镜像输出：</p>
-<p>​     4</p>
-<p>  /   <br> 7     2<br>/ \   / <br>9   6 3   1</p>
-<p>示例 1：</p>
-<p>输入：root = [4,2,7,1,3,6,9]<br>输出：[4,7,2,9,6,3,1]</p>
-<p>来源：力扣（LeetCode）<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof">https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof</a><br>著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</p>
-</blockquote>
-<h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><ul>
-<li>第一种思路是直接递归，将树的左子树赋值给右子树。</li>
-<li>另一种思路是用栈实现，思路其实和递归大同小异，只不过递归是不断的调用函数，栈则是将节点存储到栈中</li>
-</ul>
-<h4 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h4><p>demo_1: </p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"># class TreeNode:</span></span><br><span class="line"><span class="comment">#     def __init__(self, x):</span></span><br><span class="line"><span class="comment">#         self.val = x</span></span><br><span class="line"><span class="comment">#         self.left = None</span></span><br><span class="line"><span class="comment">#         self.right = None</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">mirrorTree</span>(<span class="params">self, root: TreeNode</span>) -&gt; TreeNode:</span></span><br><span class="line">        <span class="keyword">if</span> root : </span><br><span class="line">            root.left,root.right = self.mirrorTree(root.right),self.mirrorTree(root.left)</span><br><span class="line">            <span class="keyword">return</span> root </span><br><span class="line">        <span class="keyword">else</span>: </span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br></pre></td></tr></table></figure>
-
-<p>demo_2</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Definition for a binary tree node.</span></span><br><span class="line"><span class="comment"># class TreeNode:</span></span><br><span class="line"><span class="comment">#     def __init__(self, x):</span></span><br><span class="line"><span class="comment">#         self.val = x</span></span><br><span class="line"><span class="comment">#         self.left = None</span></span><br><span class="line"><span class="comment">#         self.right = None</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">mirrorTree</span>(<span class="params">self, root: TreeNode</span>) -&gt; TreeNode:</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> root:<span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">        stack = []</span><br><span class="line">        stack.append(root)</span><br><span class="line">        <span class="keyword">while</span> stack != []:</span><br><span class="line">            tmp = stack.pop()</span><br><span class="line">            <span class="keyword">if</span> tmp.left:stack.append(tmp.left)</span><br><span class="line">            <span class="keyword">if</span> tmp.right:stack.append(tmp.right)</span><br><span class="line">            tmp.left , tmp.right = tmp.right , tmp.left</span><br><span class="line">        <span class="keyword">return</span> root </span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-<h4 id="知识点补充"><a href="#知识点补充" class="headerlink" title="知识点补充"></a>知识点补充</h4><h4 id="运行结果："><a href="#运行结果：" class="headerlink" title="运行结果："></a>运行结果：</h4><ul>
-<li>demo_1 时间u复杂度 O（n）,空间复杂度O(n)</li>
-<li>空间复杂度O（n）</li>
-</ul>
-<p><img src="https://img.imgdb.cn/item/6061dc218322e6675c1d9db6.jpg"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">镜像树</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/python//" class="article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/04/05/offer-27-%E4%BA%8C%E5%8F%89%E6%A0%91%E9%95%9C%E5%83%8F/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/04/06/assets/657-%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%83%BD%E5%90%A6%E8%BF%94%E5%9B%9E%E5%8E%9F%E7%82%B9/">展开全文 >></a>
         </p>
       
 
@@ -1240,7 +1230,7 @@
   
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
     </nav>
   
 
@@ -1335,11 +1325,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">list</a>
+                <a href="javascript:void(0)" class="js-tag color4">int</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">int</a>
+                <a href="javascript:void(0)" class="js-tag color2">代理池, python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">tips,python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">list</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1351,7 +1349,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">class</a>
+                <a href="javascript:void(0)" class="js-tag color3">局域网共享,python</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1359,11 +1357,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">局域网共享,python</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Mysql</a>
+                <a href="javascript:void(0)" class="js-tag color1">class</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1371,11 +1365,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">tips,python</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
+                <a href="javascript:void(0)" class="js-tag color1">Mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1383,11 +1373,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">动态规划, 剑指offer</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">括号匹配</a>
+                <a href="javascript:void(0)" class="js-tag color5">两数之和</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1395,11 +1381,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">括号匹配</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">动态规划, 剑指offer</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">面经</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">面试</a>
+                <a href="javascript:void(0)" class="js-tag color5">单向链表</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1407,7 +1401,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">单向链表</a>
+                <a href="javascript:void(0)" class="js-tag color3">面试</a>
               </li>
             
             <div class="clearfix"></div>
